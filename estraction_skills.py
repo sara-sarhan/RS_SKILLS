@@ -211,9 +211,20 @@ class skills_extraction():
         tipojob=[]
         print("START extractjobb")
     
-     
-           
-        for idx,job in enumerate(self.listjob):
+        # len(tipojob) ==0 and  
+        print("sentece",sentece)
+        if   ('assegnista' not in sentece and 'lavoro' not in sentece and 'ricercatore' not in sentece):
+          for study in ['diploma','corso formazione','liceo','corso aggiornamneto', 'attestato conseguito','stage','borsista','laurea', 'certificazione','tirocinio','facolatà','facolata','scuola','università','liceo','diploma','dottorato','master','istituto technico']: #corso
+              span_list = [(match.start(), match.end()) for match in
+                       re.finditer(fr"\b{study}\b",sentece )]
+              if span_list and study not in tipojob :
+                  tipojob.append(study)
+                 
+                
+    
+                  break  
+        if len(tipojob) ==0 :
+         for idx,job in enumerate(self.listjob):
        
             span_list = [(match.start(), match.end()) for match in
                        
@@ -221,25 +232,18 @@ class skills_extraction():
             if span_list and job not in tipojob:
                 tipojob.append(job)
                 # print(job)
-         #    
-        if len(tipojob) ==0 and    ('lavoro' not in sentece or 'ricercatore' not in sentece):
-          for study in ['diploma','corso formazione','liceo','corso', 'attestato conseguito','stage','borsista','laurea', 'certificazione','tirocinio','facolatà','facolata','scuola','università','liceo','diploma','dottorato','master','istituto technico']:
-              span_list = [(match.start(), match.end()) for match in
-                       re.finditer(fr"\b{study}\b",sentece )]
-              if span_list and study not in tipojob :
-                  tipojob.append(study)
-                
-    
-                  break
+        
+             
+     
 
            
         print("END extractjobb")
-        tipojob1= [experience for experience in tipojob if experience
-              not in ['corso formazione', 'corso', 'attestato conseguito', 'stage', 'laurea',
-                                            'facoltà', 'facolta', 'scuola', 'università', 'liceo', 'diploma', 'dottorato',
-                                            'master', 'istituto technico'] and len(experience) > 0]
-        print(tipojob1)
-        return tipojob1
+        # tipojob1= [experience for experience in tipojob if experience
+        #       not in ['corso formazione', 'corso', 'attestato conseguito', 'stage', 'laurea',
+        #                                     'facoltà', 'facolta', 'scuola', 'università', 'liceo', 'diploma', 'dottorato',
+        #                                     'master', 'istituto technico'] and len(experience) > 0]
+       
+        return tipojob
 
 
 
@@ -440,7 +444,7 @@ class skills_extraction():
             if frase and frase not in frasiesperienza:
 
                 nestext = " ".join(frase).replace('\n', ' ').strip()
-                print(nestext)
+              
                 if len([i for i in mails_find if i is not None and i.strip() != '']) == 0:
                     mails_find.append(self.extract_email(nestext.lower()))
                     # name_find.append(mails_find[-1].split("@")[0])
@@ -463,7 +467,7 @@ class skills_extraction():
 
                 string = " ".join(frase).lower().strip()
                 string = string.replace("  ", " ").replace('‘', '')
-                print('string,........', string)
+    
                 prog = self.esxtractin_progra_skills(string)
                 if prog:
                     all_skills.extend(prog)
@@ -493,14 +497,14 @@ class skills_extraction():
                     if matches and string not in tipojob:
                         tipojob.append(string)
                         data.append((index, " ".join(frase).lower().strip()))
-                        print('match...........', string)
+                      
                     # print(string)
                     if string not in tipojob:
                         x = re.findall(
                             r'((\b\d{1,4} ([-/–]*) (oggi|attuale|in corso|presente|present)\b)|(\b(0|[0-12][0-9])([\-/–])\d{1,2}[0-12]\b)([\-/–])\d{1,4})|(\b(0|[0-12][0-9])([\-/])\d{2,4})|(\b\d{1,4}(\s[-/–]*)(0|[0-12][0-9])(oggi|attuale|in corso|presente|present, fino al)\b)|(\b\d{4}([-–])\d{4})|(\b\d{4}(\s[-–]*)\s\d{4})|(\b\d{4}(\s[al]*)\s\d{4})|(\b\d{1,4}([-/–]*)(0|[0-12][0-9])(oggi|attuale|in corso|presente|present)\b)|(\b\d{1,4}([-/–]*)(oggi|attuale|in corso|presente|present)\b)|((\b\d{1,4}([-/– ]*)(oggi|attuale|in corso|presente|present))\b)(\d{1,4}([.\-/])\d{1,2}([.\-/])\d{1,4})',
                             string, re.DOTALL)
                         if x and string not in tipojob:
-                            print('new_string', index, x, string)
+                    
                             tipojob.append(" ".join(frase).lower().strip())
                             data.append((index, " ".join(frase).lower().strip()))
 
@@ -508,7 +512,7 @@ class skills_extraction():
                             r'(\d{1,4}\s)(February|Mar|March|Apr|April|May|Jun|June|Jul|July|Aug|August|Sept|September|Oct|October|Nov|November|Dec|December|gennaio|gen.|gen.|febbraio|feb|feb.|mar|mar.|marzo|aprile|apr|apr.|mag.|mag|maggio|giu|giu.|giugno|luglio|lug.|lug|agosto|ago.|ago|set|set.|settembre|ott.|ott|ottobre|nov.|nov|novembre|dicembre|dic.|dic)'
                             , string)
                         if y and string not in tipojob:
-                            print('new_string 2', y, index, string)
+                         
                             tipojob.append(" ".join(frase).lower().strip())
                             data.append((index, " ".join(frase).lower().strip()))
 
@@ -517,7 +521,7 @@ class skills_extraction():
                             string)
 
                         if z and string not in tipojob:
-                            print('new_string 3', index, z, string)
+                       
                             tipojob.append(" ".join(frase).lower().strip())
                             data.append((index, " ".join(frase).lower().strip()))
 
@@ -532,7 +536,7 @@ class skills_extraction():
     df0 = pd.DataFrame(
         {'nome e cognome': [name_], 'residenza o domicilio': [address_], 'mails': [mails_], 'data nascita': data_})
 
-    print("0info persoali,", mails_, name_, data_, address_)
+    print("info persoali,", mails_, name_, data_, address_)
     all_skills.extend(skills)
     all_skills = list(set(all_skills))
     test = []
@@ -615,7 +619,6 @@ class skills_extraction():
 
     it_job_posts["Domain"] = it_job_posts[['jobDescription', "jobTitle"]].apply(lambda x: ", ".join(x), axis=1)
 
-    print("info persoali.........", mails_, name_, data_, address_)
    
     rs = pd.DataFrame(
         columns=['job user', 'jobID', 'jobCompany', 'jobTitle', 'scoreFinal', 'scoreDom', 'scoreSkills', 'scoreTime'])
