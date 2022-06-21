@@ -15,7 +15,7 @@ class JobPostsProcessing:
     def __init__(self, filename=""):
         if filename == "":
             if "ita_job_posts_processed.csv" in os.listdir(os.path.join(os.getcwd(), "dataset")):
-                self.processed_dataset = pd.read_csv(os.path.join(os.getcwd(), "dataset", "ita_job_posts.csv"), sep=";")
+                self.processed_dataset = pd.read_csv(os.path.join(os.getcwd(), "dataset", "ita_job_posts_clean.csv"), sep=",")
             else:
                 self.processed_dataset = self.processing_text(self.load_dataset(
                     os.path.join(os.path.join(os.getcwd(), "dataset"), Constants.ita_job_posts_filename)))

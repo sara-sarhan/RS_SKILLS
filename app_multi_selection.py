@@ -503,7 +503,7 @@ def get_skilss(n,n2, is_open):
                     )
 
 
-            ], color="success", outline=True,)
+            ], color="light")
 
           
             cards.append( html.Div([card, html.Br()]))
