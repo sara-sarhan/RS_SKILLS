@@ -452,7 +452,7 @@ def get_skilss(n,n2, is_open):
 
 
 
-        global pdfnamepath,name
+    
       
         files= list(ctrl.get_contents().keys())
        
@@ -464,12 +464,6 @@ def get_skilss(n,n2, is_open):
 
         d1 = today.strftime("%d-%m-%Y")
         namer=ctrl.get_filenameresult()
-        print('namer....',namer)
-        folder = directory.split('/')+['skills_'+namer+"_"+str(d1)+'.xlsx']
-       
-        folder[0]=folder[0]+'/'
-
-        path=os.path.join(*folder)
        
 
 
@@ -477,9 +471,15 @@ def get_skilss(n,n2, is_open):
         cards=[]
         for   pdfnamepath in  files :
           
+   
 
-         
+            name=pdfnamepath.replace("pdf",' ')
+            folder = directory.split('/')+['skills_'+namer+"_"+name +"_"+str(d1)+'.xlsx']
             
+            folder[0]=folder[0]+'/'
+
+            path=os.path.join(*folder)
+             
             rs= predict.main(pdfnamepath,path)
         
 

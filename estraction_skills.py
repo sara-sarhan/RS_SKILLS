@@ -695,7 +695,7 @@ class skills_extraction():
            
 
    
-
+  
     df = pd.DataFrame({'name': test, 'jobTitke': job})
 
     df= df[df['jobTitke'].map(lambda d: len(d)) > 0]
