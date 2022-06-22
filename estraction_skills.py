@@ -196,7 +196,7 @@ class skills_extraction():
        :param text: plain text extracted from resume file
        '''
        text=text.replace(':','').lower().strip()
-       data = re.findall("(((\d{1,4}([.\-/])([.\-/])\d{1,4}\s)(nascita|nata|data di nascita|nato|nascita|di nascita))|(nascita|nata|data di nascita|nato|di nascita) ((\d{1,4}([.\-/])\d{1,2}([.\-/])\d{1,4}))|(nascita|nata|data di nascita|nato|di nascita) ((\s\d{1,4}([.\-/])\d{1,2}([.\-/])\d{1,4})))", text)
+       data = re.findall("(((\d{1,4}([.\-/])([.\-/])\d{1,4}\s)(nascita|nata|data di nascita|nato|nascita|di nascita))|(\d{1,4}\s(gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre)\s\d{1,4})|(nascita|nata|data di nascita|nato|di nascita) ((\d{1,4}([.\-/])\d{1,2}([.\-/])\d{1,4}))|(nascita|nata|data di nascita|nato|di nascita) ((\s\d{1,4}([.\-/])\d{1,2}([.\-/])\d{1,4})))", text)
       
        if data:
            try:

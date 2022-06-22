@@ -131,7 +131,7 @@ uploader = dbc.Row(
                   dbc.Button("Get Jobs raccomandations", style={"text-align": "center"}, id="recommendation-btn",
                              n_clicks=0),
                   html.Br(),
-                  dcc.Input(id="input1", type="text", placeholder="write file name for saving results", style={'marginRight':'15px'}),
+                  #dcc.Input(id="input1", type="text", placeholder="write file name for saving results", style={'marginRight':'15px'}),
                   html.Div(id="out-all-types"),
                   dbc.Button("set folder ", style={"text-align": "center"}, id="open_directory",
                              n_clicks=0),
@@ -288,7 +288,7 @@ def selct_pdf(list_of_contents,list_of_names):
             #          id="setfolder-btn", n_clicks=0),
             html.Div([
                 html.Br(),
-                dcc.Input(id="input1", type="text", placeholder="write file name to save result", style={'marginRight':'20px'}),
+                # dcc.Input(id="input1", type="text", placeholder="write file name to save result", style={'marginRight':'20px'}),
                
                 dbc.Button('Select the Directory where to save the results', id="open_directory",n_clicks=0,color="link",
 

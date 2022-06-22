@@ -1,5 +1,6 @@
 Text
 EscapeSF
+MGI di Ganovelli
 Gagosian
 FraenkelLAB
 ArtSeed
@@ -11,6 +12,7 @@ Kadist
 mmgfoundation
 Supernatural
 Generator
+CHG Digital Solution
 UGallery
 refusalon
 hugomento
