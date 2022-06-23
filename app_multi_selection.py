@@ -11,7 +11,7 @@ import warnings
 import time
 import pandas as pd
 import numpy as np
-
+from dash import Dash, dash_table
 warnings.filterwarnings("ignore")
 ## Diskcache
 import flask
@@ -67,7 +67,7 @@ navbar = dbc.Navbar(
                 dbc.Row(
                     [
                         dbc.Col(html.Img(src=EXPERIS_LOGO, height="60px"), style={"margin-right": "5px"}),
-                        dbc.Col(dbc.NavbarBrand("Extracting Skills from resume", className="ms-2",
+                        dbc.Col(dbc.NavbarBrand("Recommendation Engine", className="ms-2",
                                                 style={"color": "#4C5154", "font-size": "30px"}),
                                 style={"margin-left": "5px"}),
                     ],
@@ -92,6 +92,7 @@ uploader = dbc.Row(
 
     dbc.Col([
 
+
         dcc.Upload(
             id="upload-resume",
             children=html.Div(
@@ -101,16 +102,23 @@ uploader = dbc.Row(
 
             ),
             style={
-                "width": "100%",
+                "width": "50%",
                 "height": "60px",
-                "lineHeight": "60px",
-                "borderWidth": "1px",
-                "borderStyle": "dashed",
-                "borderRadius": "5px",
-                "textAlign": "center",
-                "margin": "10px",
+                "line-height": "60px",
+                "border-width": "1px",
+                "border-style": "line",
+                "border-radius": "10px",
+                "text-align": "center",
+
+                "background-color": "#0D6EFD",
+                "color":"white",
+                "margin-left": "25%",
+                "margin-right": "25%",
+                "margin-top": "10px",
+                "margin-bottom": "10px"
+
             },
-            multiple=True,
+            multiple=True,disabled =False
         ),
 
         html.Div(id='output-upload'),
@@ -127,7 +135,7 @@ uploader = dbc.Row(
 
             ),
 
-            dbc.Button("Get Jobs raccomandations", style={"text-align": "center"}, id="recommendation-btn",
+            dbc.Button("Get Jobs raccomandations", style={"text-align": "center"}, id="recommendation-btn",disabled=False,
                        n_clicks=0),
             html.Br(),
             # dcc.Input(id="input1", type="text", placeholder="write file name for saving results", style={'marginRight':'15px'}),
@@ -239,7 +247,9 @@ def display_value(value):
 
 
 @app.callback(
-    output=Output('output-upload', 'children'),
+    Output('output-upload', 'children'),
+            Output("upload-resume", "disabled")
+            ,
     inputs=[Input('upload-resume', 'contents'),
             State('upload-resume', 'filename')]
 )
@@ -265,29 +275,6 @@ def selct_pdf(list_of_contents, list_of_names):
         ctrl.set_contents(dizlist)
         children = dbc.Card([
 
-            # html.Div(dcc.Link('Set folder when saved results', href='/'), style={"text-align": "center"},
-            #          id="setfolder-btn", n_clicks=0),
-            html.Div([
-                html.Br(),
-                # dcc.Input(id="input1", type="text", placeholder="write file name to save result", style={'marginRight':'20px'}),
-
-                dbc.Button('Select the directory to store the results', id="open_directory", n_clicks=0,
-                           color="link",
-                           ),
-
-                html.Div(id='selected_directory', children='No directory selected!', \
-                         ), html.Div(id="out-all-types"),
-            ]),
-
-            html.H3("Resumes", className="me-1"),
-
-            dbc.RadioItems(id='radio_items', options=[{
-                'label': v,
-                'value': v
-            } for v in list_of_names], value=list_of_names[0], inline=True
-                           , style={"margin-right": "20px"}),  #
-            html.Br(),
-
             dbc.Modal(
                 [
                     dbc.ModalHeader(dbc.ModalTitle("ATTENTION")),
@@ -302,13 +289,101 @@ def selct_pdf(list_of_contents, list_of_names):
                 is_open=False,
             ),
 
-            html.Div(dbc.Button("Recommendations"), style={"text-align": "center", "margin-bottom": "10px"},
-                     id="recommendation-btn", n_clicks=0),
+            dbc.Row(
+                [
+                    dbc.Col(
+
+                        dbc.Card(
+                            [
+                                dbc.CardHeader("Resumes"),
+                                dbc.CardBody([
+                                    html.Div([
+
+
+                                        dbc.RadioItems(id='radio_items', options=[{
+                                            'label': v,
+                                            'value': v
+                                        } for v in list_of_names], value=list_of_names[0], inline=True
+                                                       , style={"margin-right": "20px"}),  #
+                                        html.Br(),
+                                    ]),
+
+                                ]
+                                )
+
+                            ], color="light", style={"width": "100%","height":"100%"}),
+
+
+                        width={"size": 5},
+
+
+
+
+                    ),
+                    dbc.Col( align="center",  width={"size": 2},),
+                    dbc.Col(
+
+                        dbc.Card(
+                            [
+                                dbc.CardHeader("Destination folder results"),
+                                dbc.CardBody([
+                                    html.Div([
+                                        dbc.Button('Select the directory to store the results', id="open_directory",
+                                                   n_clicks=0,
+                                                   style={"text-align": "center"},disabled=False,
+                                                   # color="link",
+                                                   ),
+                                        html.Br(),
+
+                                        html.Div(id='selected_directory', children='No directory selected!'),
+                                        html.Div(id="out-all-types"),
+                                    ]),
+
+                                ]
+                                )
+
+                            ], color="light", style={"width": "100%","height":"100%"}),
+                        width={"size": 5},
+
+
+
+
+                    ),
+
+                ],
+                className="g-0",
+
+            ),
+
+            html.Br(),
+
+            dbc.Row(
+                [
+                    dbc.Col(html.Div(), md=4),
+                    dbc.Col(html.Div(
+                        html.Div(
+                        dbc.Button("Search", color="success", style={"text-align": "center","margin-bottom": "10px"},
+                                   id="recommendationbtn", disabled=False,
+                                   n_clicks=0),
+
+                        #
+                        #
+
+                                 style={"text-align": "center", "margin-bottom": "10px"},
+                                 id="recommendation-btn", n_clicks=0)
+                    ), md=4),
+                    dbc.Col(html.Div(), md=4),
+
+                ]
+            ),
+
+
             ],
-            style={"width": "100%", "margin-left": "10px", 'margin-bottom': '10px', "padding": "10px"}, color="light")
+            style={"width": "100%", "margin-left": "10px","margin-bottom": "10px" ,"margin-top": "10px", 'margin-bottom': '10px', "padding": "10px"}, color="light")
 
-        return children
-
+        return [children,True]
+    else:
+        return [html.Div(),False]
 
 #
 
@@ -377,8 +452,9 @@ def set_namesresults(input1):
 
 
 @app.callback(
-    output=
+
     Output(component_id='selected_directory', component_property='children'),
+     Output('open_directory','disabled'),
     inputs=[Input(component_id='open_directory', component_property='n_clicks'),
             ]
 )
@@ -398,19 +474,20 @@ def set_folder(n):
 
         ctrl.folder = directory
 
-        container = html.Div([html.H3("Folder selected:", className="me-1"), html.Span(directory)], style={"margin-bottom": "5px"})
+        container = html.Div([ html.Br(),html.H5("Folder selected:" +directory, className="me-1")], style={"margin-bottom": "5px"})
+       # html.Span(directory)], style = {"margin-bottom": "5px"})
 
         # return html.H5("Folder selected: " + directory,
         #              style={'width': '50%', 'display': 'inline-block', \
         #                      'text-align': 'left'}),
-        return container
+        return [container,True]
     else:
-        return html.Div()
+        return [html.Div(),False]
 
 
 @app.callback(
 
-    output=[Output("recommendations", "children"), Output("modal", "is_open")],
+    Output("recommendations", "children"), Output("modal", "is_open"), Output("recommendationbtn", "disabled"),
     inputs=[Input("recommendation-btn", "n_clicks"), Input("close1", "n_clicks"), State("modal", "is_open")],
 
 )
@@ -418,7 +495,7 @@ def get_skilss(n, n2, is_open):
     directory = ctrl.folder
     print(directory)
     if (n or n2) and directory is None:
-        return html.Div(), not is_open
+        return html.Div(), not is_open, False
 
     if n and directory is not None:
 
@@ -447,30 +524,62 @@ def get_skilss(n, n2, is_open):
             rs['DomainScore'] = rs['scoreDom'].astype('float').round(2).apply(lambda x: int(x*100)).astype('str').map("{}%".format)
             rs['SkillsScore'] = rs['scoreSkills'].astype('float').round(2).apply(lambda x: int(x*100)).astype('str').map("{}%".format)
             rs['Post'] = rs['jobDescription'].apply(lambda x: x[:200]).map("{}...".format)
+            rs['scorCompany'] = rs['scorCompany'].astype('float').round(2).apply(lambda x: int(x * 100)).astype(
+                'str').map("{}%".format)
+
             rs.reset_index(inplace=True)
 
-            print(rs['company user'].values.tolist())
+           # print(rs['company user'].values.tolist())
 
             # (scoreTime*scoreDomain + scoreSkills)/2
 
-            subset_rs = rs[['N°','job user', 'company user', 'Composite Score', 'TimeScore', 'DomainScore', 'SkillsScore', 'jobTitle', 'jobCompany', 'Post']]
+            subset_rs = rs[['N°','job user', 'company user', 'Composite Score', 'TimeScore',\
+                            'DomainScore', 'SkillsScore', "scorCompany",'namescoe','jobTitle', 'jobCompany', 'Post','Apply']]
             subset_rs.rename(columns={'job user': 'Candidate job title', 'jobCompany': 'Company post', 'company user': 'Candidate company', \
-                                      'jobTitle': 'Post job title'}, inplace=True)
+                                      'jobTitle': 'Post job title','scorCompany':'CompanyScore','namescoe':'TypeCompany'}, inplace=True)
 
             os.remove(pdfnamepath)
+
 
             card = dbc.Card(
                 [
 
                     dbc.CardBody([
-                        dbc.Table.from_dataframe(
+                        dash_table.DataTable(
+                            subset_rs.to_dict('records'),
+                            [{"name": i, "id": i} for i in subset_rs.columns],
+                            # style header
+                            style_header={'backgroundColor': 'rgba(60, 90, 162, .25)',
+                                          'fontWeight': 'bold', "border": "1px solid gray"},
+                            style_table={'overflowX': 'scroll'},
+                            style_data={'border': '1px solid gray'},
 
-                            subset_rs, striped=True, bordered=False, hover=True, index=False,
-                            color='dark',
-                            size='sm'
+                            style_cell={
 
 
+                                'minWidth': '120px', 'width': '150px', 'maxWidth': '180px',
+
+                                'textOverflow': 'ellipsis',
+                            },
+                            style_data_conditional=[
+
+                                {
+                                    'if': {
+                                        'column_id': 'Apply',
+                                    },
+                                    'backgroundColor': '#98FB98',
+                                    'color': 'red','fontWeight': 'bold'
+                                }]
                         )
+
+                        # dbc.Table.from_dataframe(
+                        #
+                        #     subset_rs, striped=True, bordered=False, hover=True, index=False,
+                        #     color='light',
+                        #     size='sm'
+                        #
+                        #
+                        # )
 
                     ]
                     )
@@ -479,8 +588,8 @@ def get_skilss(n, n2, is_open):
 
             cards.append(html.Div([dbc.Row(dbc.Col(card, width={"size": 12})), html.Br()], style={"margin-left": "10px", "margin-right": "10px"}))
 
-        return cards, False
-    return html.Div(), False
+        return [cards, False,True]
+    return[ html.Div(), False,False]
 
 
 if __name__ == "__main__":

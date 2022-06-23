@@ -56,7 +56,8 @@ class skills_extraction():
         self.pdfnamepath = pdfnamepath
         self.pathmodel = pathmodel
         self.folder = folder
-
+        self.dictcompany={'inreslab scarl':'small',"experis s.r.l":'medium','experis':"medium"}
+        self.type_company={'large':1,'medium':0.6,'small':0.3}
         from spacy.lang.it.stop_words import STOP_WORDS
         self.stop = list(spacy.lang.it.stop_words.STOP_WORDS)
         self.stop.extend(['e', 'i'])
@@ -116,7 +117,7 @@ class skills_extraction():
         if comp == 'non trovata':
             # company = re.search("\w+(?=\s(s.p.a.|s.r.l|scarl|ss|snc|sas|spa|srl|srls|sapa|sas|saa|socsoop|s.s|s.n.c|s.a.s|s.p.a|s.r.l|s.r.l.s|s.a.p.a|s.a.s|s.a.a.|soc.coop))", text)
             company = re.search(
-                "(\w+((. s.r.l.|s.a.s.|. s.r.l.|s.p.a.|s.r.l.|scarl|snc|sas|spa|srl|srls|sapa|sas|saa|socsoop|s.s|s.n.c|s.a.s|s.p.a|s.r.l|s.r.l.s|s.a.p.a|s.a.s|s.a.a.|soc.coop)\s))|(\w+(\s(s.a.s.|. s.r.l.|s.p.a.|s.r.l.|scarl|snc|sas|spa|srl|srls|sapa|sas|saa|socsoop|s.s|s.n.c|s.a.s|s.p.a|s.r.l|s.r.l.s|s.a.p.a|s.a.s|s.a.a.|soc.coop)\s))",
+                "(\w+((. s.r.l.|. s.a.s.|. s.r.l.|. s.p.a.|. s.r.l.|. scarl|.snc|. sas|. spa|. srl|. srls|. sapa|.sas|. saa|.socsoop|. s.n.c|. s.a.s|. s.p.a|. s.r.l|. s.r.l.s|. s.a.p.a|. s.a.s|. s.a.a.|. soc.coop)\s))|(\w+(\s(s.a.s.|. s.r.l.|s.p.a.|s.r.l.|scarl|snc|sas|spa|srl|srls|sapa|sas|saa|socsoop|s.s|s.n.c|s.a.s|s.p.a|s.r.l|s.r.l.s|s.a.p.a|s.a.s|s.a.a.|soc.coop)\s))",
                 text)
             if company:
 
@@ -557,7 +558,7 @@ class skills_extraction():
         df0 = pd.DataFrame(
             {'nome e cognome': [name_], 'residenza o domicilio': [address_], 'mails': [mails_], 'data nascita': data_})
 
-        print("start rs")
+
         all_skills.extend(skills)
         all_skills = list(set(all_skills))
 
@@ -630,7 +631,7 @@ class skills_extraction():
 
         rs = pd.DataFrame(
             columns=['job user', 'company user', 'jobID', 'jobCompany', 'jobTitle', 'scoreFinal', 'scoreDom',
-                     'scoreSkills', 'scoreTime'])
+                     'scoreSkills', 'scoreTime','Apply',"scorCompany",'namescoe'])
 
         jobslist = it_job_posts['jobTitle'].tolist()
 
@@ -642,7 +643,7 @@ class skills_extraction():
         scortime = 1 / len(exp)
         count = len(exp)
 
-        company = []
+
 
         score_skills1 = np.array(FeatureExtraction.TFIDF(description, [" ".join(all_skills).replace('\n', '')]))
         score_skills = list((score_skills1 - score_skills1.min()) / (score_skills1.max() - score_skills1.min()))
@@ -656,13 +657,21 @@ class skills_extraction():
                 scortime1 = scortime * count
 
                 company = self.extract_company(text)
+                if company in self.dictcompany.keys():
+                    scorCompany=self.type[company]
+                    namescoe = self.dictcompany[company]
+                else:
+                    namescoe= np.random.choice(list(self.type_company.keys()))
+                    scorCompany = self.type_company[namescoe]
                 scoreDomin1 = np.array(
                     FeatureExtraction.TFIDF(description,
                                             [" ".join(experience).replace('\n', ' ') + text.replace('\n', ' ')]))
                 scoreDomin = (scoreDomin1 - scoreDomin1.min()) / (scoreDomin1.max() - scoreDomin1.min())
                 #
+                scorCompany_vect = np.array([scorCompany for i in range(len(score_skills))])
 
-                output_tfidf = (((scoreDomin * scortime1)) + np.array(score_skills)) / 2
+                print("scorCompany_vect......",scorCompany_vect)
+                output_tfidf = 0.9*((((scoreDomin * scortime1)) + np.array(score_skills)) / 2) +0.1*scorCompany_vect
                 top = sorted(range(len(output_tfidf)), key=lambda i: output_tfidf[i], reverse=True)[:1]
                 list_scores = [output_tfidf[i] for i in top]
                 list_scoreDomin = [scoreDomin[i] for i in top]
@@ -670,7 +679,10 @@ class skills_extraction():
                 list_score_time = [scortime1 for i in top]
                 rs = rs.append(
                     CrossFunctions.get_recommendation(top, it_job_posts, list_scores, experience, list_scoreDomin,
-                                                      list_score_skills, list_score_time, company))
+                                                      list_score_skills, list_score_time, company,
+                                                      namescoe,scorCompany
+
+                                                      ))
 
                 description.pop(jobslist.index(rs.iloc[-1].jobTitle))
                 score_skills.pop(jobslist.index(rs.iloc[-1].jobTitle))
@@ -680,6 +692,8 @@ class skills_extraction():
         df = pd.DataFrame({'name': test, 'jobTitle': job})
 
         df = df[df['jobTitle'].map(lambda d: len(d)) > 0]
+
+
 
         with pd.ExcelWriter(self.folder, engine='xlsxwriter') as writer1:
             # df.to_excel(name,index=False)
