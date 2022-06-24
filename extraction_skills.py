@@ -658,7 +658,7 @@ class skills_extraction():
 
                 company = self.extract_company(text)
                 if company in self.dictcompany.keys():
-                    scorCompany=self.type[company]
+                    scorCompany=self.dictcompany[company]
                     namescoe = self.dictcompany[company]
                 else:
                     namescoe= np.random.choice(list(self.type_company.keys()))

@@ -485,9 +485,24 @@ def set_folder(n):
         return [html.Div(),False]
 
 
+
+
 @app.callback(
 
-    Output("recommendations", "children"), Output("modal", "is_open"), Output("recommendationbtn", "disabled"),
+    Output("recommendationbtn", "disabled"),
+    inputs=[Input("recommendationbtn", "n_clicks")]
+)
+
+
+def search(n_clicks):
+    directory = ctrl.folder
+    if n_clicks and directory :
+        return True
+
+
+@app.callback(
+
+    Output("recommendations", "children"), Output("modal", "is_open"),
     inputs=[Input("recommendation-btn", "n_clicks"), Input("close1", "n_clicks"), State("modal", "is_open")],
 
 )
@@ -495,7 +510,7 @@ def get_skilss(n, n2, is_open):
     directory = ctrl.folder
     print(directory)
     if (n or n2) and directory is None:
-        return html.Div(), not is_open, False
+        return html.Div(), not is_open
 
     if n and directory is not None:
 
@@ -588,8 +603,8 @@ def get_skilss(n, n2, is_open):
 
             cards.append(html.Div([dbc.Row(dbc.Col(card, width={"size": 12})), html.Br()], style={"margin-left": "10px", "margin-right": "10px"}))
 
-        return [cards, False,True]
-    return[ html.Div(), False,False]
+        return [cards, False]
+    return[ html.Div(), False]
 
 
 if __name__ == "__main__":
