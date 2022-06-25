@@ -28,20 +28,16 @@ server = flask.Flask(__name__)
 
 app = dash.Dash(
     server=server,
-    external_stylesheets=[dbc.themes.BOOTSTRAP],
+    external_stylesheets=[dbc.themes.BOOTSTRAP, dbc.icons.BOOTSTRAP],
     # serve_locally=False,
 )
 
-url_bar_and_content_div = html.Div([
-    dcc.Location(id='url', refresh=False),
-    html.Div(id='page-content')
-])
+# url_bar_and_content_div = html.Div([
+#     dcc.Location(id='url', refresh=False),
+#     html.Div(id='page-content')
+# ])
 
-layout_index = html.Div([
-    dcc.Link('Navigate to "/page-1"', href='/page-1'),
-    html.Br(),
-    dcc.Link('Navigate to "/page-2"', href='/page-2'),
-])
+
 
 EXPERIS_LOGO = "http://health5g.eu/wp-content/uploads/2019/09/Experis-IT.png"
 ctrl = Controller()
@@ -80,11 +76,10 @@ uploader = dbc.Row(
 
 
 
-
         dcc.Upload(
             id="upload-resume",
             children=html.Div(
-                ["Drag and drop or click to select a resumes to upload.",
+                ["Trascina e rilascia o clicca per caricare un curriculum",
 
                  ],       id="upload", n_clicks=0,
 
@@ -99,14 +94,14 @@ uploader = dbc.Row(
                 "text-align": "center",
 
                 "background-color": "#0D6EFD",
-                "color":"white",
+                "color": "white",
                 "margin-left": "25%",
                 "margin-right": "25%",
                 "margin-top": "10px",
                 "margin-bottom": "10px"
 
             },
-            multiple=True,disabled =False
+            multiple=True, disabled =False
         ),
 
 
@@ -116,44 +111,7 @@ uploader = dbc.Row(
 
         dcc.Loading(id="loading-resume", children=[html.Div(id="output-resume")], type="default"),
         dbc.RadioItems(id='radio_items'),
-        html.Div([
 
-            dbc.Button(id="collapse-button"),
-            dbc.Button("Primary", outline=True, color="primary", className="me-1"),
-
-            dbc.Collapse(
-                id="resume-collapse",
-
-            ),
-
-            dbc.Button("Get Jobs raccomandations", style={"text-align": "center"}, id="recommendation-btn",disabled=False,
-                       n_clicks=0),
-            dbc.Button("Activate all buttons", outline=True, color="primary", className="me-1", id="refresh-btn",
-                       style={"text-align": "left", "margin-bottom": "10px", "margin-top": "20px"}, ),
-
-            html.Br(),
-            # dcc.Input(id="input1", type="text", placeholder="write file name for saving results", style={'marginRight':'15px'}),
-            html.Div(id="out-all-types"),
-            dbc.Button("set folder ", style={"text-align": "center"}, id="open_directory",
-                       n_clicks=0),
-            html.Div(id='selected_directory'),
-
-            dbc.Modal(
-                [
-                    dbc.ModalHeader(dbc.ModalTitle("ATTENTION")),
-                    dbc.ModalBody("Select folder!"),
-
-                    dbc.ModalFooter(
-                        dbc.Button(
-                            "Close", id="close1", className="ms-auto", n_clicks=0
-                        )
-                    ),
-                ],
-                id="modal",
-                is_open=False,
-            ),
-
-        ], style={"display": "none"})
 
     ],
         width={"size": 10, "offset": 1}),
@@ -163,52 +121,42 @@ jobs_recommended = dcc.Loading(id="loading-recommendations",
                                children=[html.Div(id="recommendations"),html.Div(id="refresh")], type="default")
 
 
-
-layout_page_1 = html.Div([
-    dbc.Card(
-        [
-
-            dbc.CardBody(
-
-                dbc.Row(
-                    [
-                        dbc.Col(
-                            html.H1(
-                                html.B("Servizio non disponibile"),
-                                className="text-center mt-4 mb-5",
-                                style={"color": "Purple", "text-decoration": "None", },
-                            )
-                        )
-                    ]
-                ),
-            ),
-        ],
-
-        style={"height": "100%"},
-    )
-])
+# layout_page_1 = html.Div([
+#     dbc.Card(
+#         [
+#
+#             dbc.CardBody(
+#
+#                 dbc.Row(
+#                     [
+#                         dbc.Col(
+#                             html.H1(
+#                                 html.B("Servizio non disponibile"),
+#                                 className="text-center mt-4 mb-5",
+#                                 style={"color": "Purple", "text-decoration": "None", },
+#                             )
+#                         )
+#                     ]
+#                 ),
+#             ),
+#         ],
+#
+#         style={"height": "100%"},
+#     )
+# ])
 
 layout_page_2 = html.Div([
     uploader, html.Br(), jobs_recommended,
 
 ])
 
-# app.layout = html.Div([navbar, uploader, html.Br(), jobs_recommended])
-# "complete" layout
-# "complete" layout
+
 app.layout = html.Div([
 
-     dcc.Location(id='url', refresh=False),
-    html.Div(id='page-content')
-])
+    # dcc.Location(id='url', refresh=False),
+    # html.Div(id='page-content')
 
-
-@app.callback(Output('page-content', 'children'),
-              Input('url', 'pathname'))
-def display_page(relative_pathname):
-    return html.Div([
-
-        dbc.Navbar(
+dbc.Navbar(
             dbc.Container(
                 [
                     html.A(
@@ -220,14 +168,14 @@ def display_page(relative_pathname):
                                 dbc.Col(dbc.NavbarBrand("Recommendation Engine", className="ms-2",
                                                         style={"color": "#4C5154", "font-size": "30px"}),width=8
                                         ),
-                                dbc.Col(html.A(html.Button('Refresh Page',
-                                                           style={'margin-bottom': '10px',
-                                                                  "fontSize": "1em",
-                                                                  "background-color": "white", "color": "black",
-                                                                  "border-radius": "10px",
-                                                                  "border": "2px solid dodgerblue"}),
-                                               href=relative_pathname),align="end",
-                                        ),
+                                # dbc.Col(html.A(html.Button('Refresh Page',
+                                #                            style={'margin-bottom': '10px',
+                                #                                   "fontSize": "1em",
+                                #                                   "background-color": "white", "color": "black",
+                                #                                   "border-radius": "10px",
+                                #                                   "border": "2px solid dodgerblue"}),
+                                #                href=relative_pathname),align="end",
+                                #         ),
 
 
                             ],
@@ -246,23 +194,71 @@ def display_page(relative_pathname):
             ),
             color="light",
             dark=True,
-        )
-
- ,
+        ),
         layout_page_2,
 
 
-    ])
+])
+
+
+# @app.callback(Output('page-content', 'children'),
+#               Input('url', 'pathname'))
+# def display_page(relative_pathname):
+#     return html.Div([
+#
+#         dbc.Navbar(
+#             dbc.Container(
+#                 [
+#                     html.A(
+#                         dbc.Row(
+#                             [
+#
+#
+#                                 dbc.Col(html.Img(src=EXPERIS_LOGO, height="60px"), style={"margin-right": "5px"}),
+#                                 dbc.Col(dbc.NavbarBrand("Recommendation Engine", className="ms-2",
+#                                                         style={"color": "#4C5154", "font-size": "30px"}),width=8
+#                                         ),
+#                                 # dbc.Col(html.A(html.Button('Refresh Page',
+#                                 #                            style={'margin-bottom': '10px',
+#                                 #                                   "fontSize": "1em",
+#                                 #                                   "background-color": "white", "color": "black",
+#                                 #                                   "border-radius": "10px",
+#                                 #                                   "border": "2px solid dodgerblue"}),
+#                                 #                href=relative_pathname),align="end",
+#                                 #         ),
+#
+#
+#                             ],
+#                             align="center",
+#                             className="g-0",
+#                         ),
+#                         style={"textDecoration": "none"},
+#                     ),
+#                     dbc.NavbarToggler(id="navbar-toggler", n_clicks=0),
+#                     dbc.Collapse(
+#                         id="navbar-collapse",
+#                         is_open=False,
+#                         navbar=True,
+#                     ),
+#                 ]
+#             ),
+#             color="light",
+#             dark=True,
+#         ),
+#         layout_page_2,
+#
+#
+#     ])
 
 
 @app.callback(
-    Output('output-upload', 'children'),
-            Output("upload-resume", "disabled")
-            ,
-    inputs=[Input('upload-resume', 'contents'),
+            Output('output-upload', 'children'),
+            Output("upload-resume", "disabled"),
+            Output("upload-resume", "style"),
+    inputs= [Input('upload-resume', 'contents'),
             State('upload-resume', 'filename')]
 )
-def selct_pdf(list_of_contents, list_of_names):
+def select_pdf(list_of_contents, list_of_names):
     if list_of_contents is not None:
         content_type, content_string = list_of_contents[0].split(',')
         # ctrl.set_filename (list_of_names)
@@ -286,8 +282,8 @@ def selct_pdf(list_of_contents, list_of_names):
 
             dbc.Modal(
                 [
-                    dbc.ModalHeader(dbc.ModalTitle("ATTENTION")),
-                    dbc.ModalBody("No folder selected!"),
+                    dbc.ModalHeader(dbc.ModalTitle("Attenzione"), style={"color": "white", "background-color": "#f0833c"}),
+                    dbc.ModalBody("Non hai selezionato la cartella per il salvataggio dei risultati!"),
                     dbc.ModalFooter(
                         dbc.Button(
                             "Close", id="close1", className="ms-auto", n_clicks=0
@@ -304,7 +300,7 @@ def selct_pdf(list_of_contents, list_of_names):
 
                         dbc.Card(
                             [
-                                dbc.CardHeader("Resumes"),
+                                dbc.CardHeader("Curriculum da processare", style={"color":"white", "background-color": "#f0833c", "font-weight": "bold"}),
                                 dbc.CardBody([
                                     html.Div([
 
@@ -313,7 +309,7 @@ def selct_pdf(list_of_contents, list_of_names):
                                             'label': v,
                                             'value': v
                                         } for v in list_of_names], value=list_of_names[0], inline=True
-                                                       , style={"margin-right": "20px"}),  #
+                                                       , style={"margin-right": "20px", "font-weight": "bold", "font-size":"20px", "color": "dimgray"}),
                                         html.Br(),
                                     ]),
 
@@ -323,28 +319,30 @@ def selct_pdf(list_of_contents, list_of_names):
                             ], color="light", style={"width": "100%","height":"100%"}),
 
 
-                        width={"size": 5},
+                        width={"size": 6},
 
 
 
 
                     ),
-                    dbc.Col( align="center",  width={"size": 2},),
+                    # dbc.Col( align="center",  width={"size": 2},),
                     dbc.Col(
 
                         dbc.Card(
                             [
-                                dbc.CardHeader("Destination folder results"),
+                                dbc.CardHeader("Salvataggio dei risultati",  style={"color":"white", "background-color": "#779788", "font-weight": "bold"}),
                                 dbc.CardBody([
                                     html.Div([
-                                        dbc.Button('Select the directory to store the results', id="open_directory",
-                                                   n_clicks=0,
-                                                   style={"text-align": "center"},disabled=False,
-                                                   # color="link",
-                                                   ),
-                                        html.Br(),
+                                        html.Div([
+                                            dbc.Button('Salva i risultati in ...', id="open_directory",
+                                                       n_clicks=0,
+                                                       style={"text-align": "center"}, disabled=False,
 
-                                        html.Div(id='selected_directory', children='No directory selected!'),
+                                                       # color="link",
+                                                       ),
+                                        ], className="d-grid gap-2"),
+
+                                        html.Div(id='selected_directory', children='No directory selected!', style={"margin-top":"5px", "margin-bottom":"2px", "text-align": "center"}),
                                         html.Div(id="out-all-types"),
                                     ]),
 
@@ -352,7 +350,7 @@ def selct_pdf(list_of_contents, list_of_names):
                                 )
 
                             ], color="light", style={"width": "100%","height":"100%"}),
-                        width={"size": 5},
+                        width={"size": 6},
 
 
 
@@ -360,39 +358,95 @@ def selct_pdf(list_of_contents, list_of_names):
                     ),
 
                 ],
-                className="g-0",
+
 
             ),
 
-            html.Br(),
+            html.Hr(style={"border-top": "1px dashed gray"}),
 
             dbc.Row(
                 [
-                    dbc.Col(html.Div(), md=4),
-                    dbc.Col(html.Div(
-                        html.Div(
-                        dbc.Button("Search", color="success", style={"text-align": "center","margin-bottom": "10px"},
-                                   id="recommendationbtn", disabled=False,
-                                   n_clicks=0),
+                    dbc.Col(
+                        children=[
+                            html.Div(
+                                html.Div(
+                                    dbc.Button(html.Span([html.I(className="bi bi-search me-2"), "Cerca"]),
+                                               color="primary", style={"text-align": "center", "font-weight": "bold",
+                                                                       "font-size": "25px"},
+                                               id="recommendationbtn", disabled=False,
+                                               n_clicks=0),
 
-                        #
-                        #
+                                    style={"text-align": "center", "margin-bottom": "10px"},
+                                    id="recommendation-btn", n_clicks=0, className="d-grid gap-2")
+                            ),
 
-                                 style={"text-align": "center", "margin-bottom": "10px"},
-                                 id="recommendation-btn", n_clicks=0)
-                    ), md=4),
-                    dbc.Col(html.Div(), md=4),
+                            html.A(
+
+
+                            html.Div(
+                                html.Div(
+
+                                    dbc.Button(html.Span([html.I(className="bi bi-arrow-clockwise me-2"), "Pulisci"]),
+                                               color="danger", style={"text-align": "center", "font-weight": "bold",
+                                                                       "font-size": "25px"},
+                                               id="cleanbtn", disabled=False,
+                                               n_clicks=0),
+
+                                    style={"text-align": "center", "margin-bottom": "10px"},
+                                    id="clean-btn", n_clicks=0, className="d-grid gap-2")
+                            ), href='/', style={"text-decoration": "none"}
+                            ),
+
+
+                        ],
+
+
+
+                        width={"size": 4, "offset": 4}),
+                    # dbc.Col(html.Div(), md=4),
 
                 ]
             ),
 
 
             ],
-            style={"width": "100%", "margin-left": "10px","margin-bottom": "10px" ,"margin-top": "10px", 'margin-bottom': '10px', "padding": "10px"}, color="light")
+            style={"width": "100%", "margin-left": "10px", "margin-bottom": "10px", "margin-top": "10px", "padding": "10px"}, color="light")
 
-        return [children,True]
+        return [children, True, {
+                "width": "50%",
+                "height": "60px",
+                "line-height": "60px",
+                "border-width": "1px",
+                "border-style": "line",
+                "border-radius": "10px",
+                "text-align": "center",
+
+                "background-color": "#6c757d",
+                "color": "white",
+                "margin-left": "25%",
+                "margin-right": "25%",
+                "margin-top": "10px",
+                "margin-bottom": "10px"
+
+            }]
     else:
-        return [html.Div(),False]
+        return [html.Div(), False,  {
+                "width": "50%",
+                "height": "60px",
+                "line-height": "60px",
+                "border-width": "1px",
+                "border-style": "line",
+                "border-radius": "10px",
+                "text-align": "center",
+
+                "background-color": "#0D6EFD",
+                "color": "white",
+                "margin-left": "25%",
+                "margin-right": "25%",
+                "margin-top": "10px",
+                "margin-bottom": "10px"
+
+            },]
 
 #
 
@@ -406,12 +460,15 @@ def update_items(value):
         content_string = diz[value]
         resume_card = dbc.Card([
             dbc.CardHeader(
-                html.Div([value, dbc.Button(
-                    "Show/Hide",
+                html.Div([html.Span(value, style={"font-style": "italic", "color": "#5078b4"}),
+
+                    dbc.Button(
+                    "Mostra/Nascondi",
                     id="collapse-button",
                     className="mb-3",
                     color="info",
                     n_clicks=0,
+                    style={"color": "white", "font-weight": "bold"}
                 ), ], className="d-flex w-100 justify-content-between")
 
             ),
@@ -482,15 +539,12 @@ def set_folder(n):
 
         ctrl.folder = directory
 
-        container = html.Div([ html.Br(),html.H5("Folder selected:" +directory, className="me-1")], style={"margin-bottom": "5px"})
-       # html.Span(directory)], style = {"margin-bottom": "5px"})
+        folder_container = html.Span(directory, style={"font-weight": "bold", "font-size":"20px", "color": "dimgray"}),
 
-        # return html.H5("Folder selected: " + directory,
-        #              style={'width': '50%', 'display': 'inline-block', \
-        #                      'text-align': 'left'}),
-        return [container,True]
+
+        return [folder_container, True]
     else:
-        return [html.Div(),False]
+        return [html.Div(), False]
 
 
 
@@ -554,7 +608,7 @@ def get_skilss(n, n2, is_open):
             # (scoreTime*scoreDomain + scoreSkills)/2
 
             subset_rs = rs[['N°','job user', 'company user', 'Composite Score', 'TimeScore',\
-                            'DomainScore', 'SkillsScore', "scorCompany",'namescoe','jobTitle', 'jobCompany', 'Post','Apply']]
+                            'DomainScore', 'SkillsScore', "scorCompany",'namescoe','jobTitle', 'jobCompany', 'Post', 'Apply']]
             subset_rs.rename(columns={'job user': 'Candidate job title', 'jobCompany': 'Company post', 'company user': 'Candidate company', \
                                       'jobTitle': 'Post job title','scorCompany':'CompanyScore','namescoe':'TypeCompany'}, inplace=True)
 
@@ -579,13 +633,19 @@ def get_skilss(n, n2, is_open):
                             ],
                             css=[{
                                 'selector': '.dash-table-tooltip',
-                                'rule': 'background-color: grey; font-family: monospace; color: white'
+                                'rule': 'background-color: grey; font-family: monospace; color: white',
+
                             }],
+
 
                             # ,fill_width=False,
                             style_header={
-                                'fontSize': 15,
-                                'textDecoration': 'underline',
+                                'fontSize': 17,
+                                # 'textDecoration': 'underline',
+                                'fontWeight': "bold",
+                                'backgroundColor': "#5078b4",
+                                "color": "white",
+                                "fontFamily": "Arial,Helvetica Neue,Helvetica,sans-serif"
 
                             },
 
@@ -593,7 +653,8 @@ def get_skilss(n, n2, is_open):
 
                             style_cell={
                                 'overflow': 'hidden', 'fontSize': 15,
-                                'textOverflow': 'ellipsis', "width": "50%", 'maxWidth': 100
+                                'textOverflow': 'ellipsis', "width": "50%", 'maxWidth': 100,
+                                "fontFamily": "Arial,Helvetica Neue,Helvetica,sans-serif"
 
                             },
 
@@ -609,6 +670,29 @@ def get_skilss(n, n2, is_open):
                                     'backgroundColor': '#98FB98',
                                     'color': 'red', 'fontWeight': 'bold'
                                 },
+
+
+                            ],
+
+                            style_cell_conditional = [
+
+                                {'if': {'column_id': 'N°'},
+                                 'width': '5%'},
+
+                                {'if': {'column_id': 'Candidate company'},
+                                 'width': '20%'},
+                                {'if': {'column_id': 'Composite Score'},
+                                 'width': '15%', 'font-weight': 'bold', "color": "#f0833c"},
+                                {'if': {'column_id': 'Company post'},
+                                 'width': '20%'},
+                                {'if': {'column_id': 'TimeScore'},
+                                 'font-weight': 'bold', "color": "#5078b4"},
+                                {'if': {'column_id': 'DomainScore'},
+                                 'font-weight': 'bold', "color": "#5078b4"},
+                                {'if': {'column_id': 'SkillsScore'},
+                                 'font-weight': 'bold', "color": "#5078b4"},
+                                {'if': {'column_id': 'CompanyScore'},
+                                 'font-weight': 'bold', "color": "#5078b4"},
 
                             ]
                         ),
@@ -630,7 +714,7 @@ def get_skilss(n, n2, is_open):
             cards.append(html.Div([dbc.Row(dbc.Col(card, width={"size": 12})), html.Br()], style={"margin-left": "10px", "margin-right": "10px"}))
 
         return [cards, False]
-    return[ html.Div(), False]
+    return[html.Div(), False]
 
 
 if __name__ == "__main__":
