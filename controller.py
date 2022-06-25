@@ -6,8 +6,11 @@ class Controller:
 
     def __init__(self):
 
-
-       
+        self.rest=False
+        self.upload=False
+        self.rs_end=False
+        self.search_start = False
+        self.slect_folder=False
         self._resume_txt = ""
         self.ln = ""
         self.list_of_contents = {}

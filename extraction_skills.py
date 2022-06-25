@@ -141,7 +141,7 @@ class skills_extraction():
 
 
     def extract_name(self, text):
-        with open(os.path.join(os.getcwd(), "dataset", 'NomiCognomi.txt'), encoding="utf8") as f:
+        with open(os.path.join(os.getcwd(), "dataset", 'namesCompany.txt'), encoding="utf8") as f:
             linesnames = [i.replace('\n', ' ').title() for i in f.readlines()]
         text = text.replace(':', '').title().strip()
         NAME = re.findall(
@@ -658,8 +658,9 @@ class skills_extraction():
 
                 company = self.extract_company(text)
                 if company in self.dictcompany.keys():
-                    scorCompany=self.dictcompany[company]
+
                     namescoe = self.dictcompany[company]
+                    scorCompany = self.type_company[namescoe]
                 else:
                     namescoe= np.random.choice(list(self.type_company.keys()))
                     scorCompany = self.type_company[namescoe]

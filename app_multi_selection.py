@@ -12,6 +12,7 @@ import time
 import pandas as pd
 import numpy as np
 from dash import Dash, dash_table
+
 warnings.filterwarnings("ignore")
 ## Diskcache
 import flask
@@ -21,26 +22,10 @@ from waitress import serve
 _start_time = time.time()
 
 
-def tic():
-    global _start_time
-    _start_time = time.time()
 
-
-from datetime import datetime
-
-
-def tac():
-    t_sec = round(time.time() - _start_time)
-    (t_min, t_sec) = divmod(t_sec, 60)
-    (t_hour, t_min) = divmod(t_min, 60)
-    print('{}:{}:{}.'.format(t_hour, t_min, t_sec))
-    tim = str(t_hour) + ":" + str(t_min) + ":" + str(t_sec)
-    print(tim)
-    dt = datetime.strptime(tim, '%H:%M:%S')
-
-    return dt
 
 server = flask.Flask(__name__)
+
 app = dash.Dash(
     server=server,
     external_stylesheets=[dbc.themes.BOOTSTRAP],
@@ -90,7 +75,10 @@ navbar = dbc.Navbar(
 
 uploader = dbc.Row(
 
+
     dbc.Col([
+
+
 
 
         dcc.Upload(
@@ -98,7 +86,7 @@ uploader = dbc.Row(
             children=html.Div(
                 ["Drag and drop or click to select a resumes to upload.",
 
-                 ],
+                 ],       id="upload", n_clicks=0,
 
             ),
             style={
@@ -121,6 +109,8 @@ uploader = dbc.Row(
             multiple=True,disabled =False
         ),
 
+
+
         html.Div(id='output-upload'),
         html.Br(),
 
@@ -129,6 +119,7 @@ uploader = dbc.Row(
         html.Div([
 
             dbc.Button(id="collapse-button"),
+            dbc.Button("Primary", outline=True, color="primary", className="me-1"),
 
             dbc.Collapse(
                 id="resume-collapse",
@@ -137,6 +128,9 @@ uploader = dbc.Row(
 
             dbc.Button("Get Jobs raccomandations", style={"text-align": "center"}, id="recommendation-btn",disabled=False,
                        n_clicks=0),
+            dbc.Button("Activate all buttons", outline=True, color="primary", className="me-1", id="refresh-btn",
+                       style={"text-align": "left", "margin-bottom": "10px", "margin-top": "20px"}, ),
+
             html.Br(),
             # dcc.Input(id="input1", type="text", placeholder="write file name for saving results", style={'marginRight':'15px'}),
             html.Div(id="out-all-types"),
@@ -166,7 +160,9 @@ uploader = dbc.Row(
 
 )
 jobs_recommended = dcc.Loading(id="loading-recommendations",
-                               children=[html.Div(id="recommendations")], type="default")
+                               children=[html.Div(id="recommendations"),html.Div(id="refresh")], type="default")
+
+
 
 layout_page_1 = html.Div([
     dbc.Card(
@@ -193,57 +189,70 @@ layout_page_1 = html.Div([
 ])
 
 layout_page_2 = html.Div([
-    navbar, uploader, html.Br(), jobs_recommended,
+    uploader, html.Br(), jobs_recommended,
 
 ])
 
 # app.layout = html.Div([navbar, uploader, html.Br(), jobs_recommended])
 # "complete" layout
+# "complete" layout
 app.layout = html.Div([
-    dcc.Location(id='url', refresh=False),
+
+     dcc.Location(id='url', refresh=False),
     html.Div(id='page-content')
 ])
 
 
 @app.callback(Output('page-content', 'children'),
               Input('url', 'pathname'))
-def display_page(pathname):
-    import json
-    with open(os.path.join(os.getcwd(), "json", 'json_data_info.json')) as json_file:
-        data = eval(json.load(json_file))
-        stato = data['Stato']
-        print(stato)
-        data['stato_core'] = 'IDLE'
+def display_page(relative_pathname):
+    return html.Div([
 
-        json_string = json.dumps(data)
-
-        # Directly from dictionary
-        with open(os.path.join(os.getcwd(), "json", 'json_data_info.json'), 'w') as outfile:
-            json.dump(json_string, outfile)
-
-    if stato.strip().lower() == 'run':
-        return layout_page_2
-    elif stato.strip().lower() == 'stop':
-        return layout_page_1
-    else:
-        return layout_index
+        dbc.Navbar(
+            dbc.Container(
+                [
+                    html.A(
+                        dbc.Row(
+                            [
 
 
-# Page 1 callbacks
-@app.callback(Output('output-state', 'children'),
-              Input('submit-button', 'n_clicks'),
-              State('input-1-state', 'value'),
-              State('input-2-state', 'value'))
-def update_output(n_clicks, input1, input2):
-    return f'The Button has been pressed {n_clicks} times. \
-            Input 1 is {input1} and Input 2 is {input2}'
+                                dbc.Col(html.Img(src=EXPERIS_LOGO, height="60px"), style={"margin-right": "5px"}),
+                                dbc.Col(dbc.NavbarBrand("Recommendation Engine", className="ms-2",
+                                                        style={"color": "#4C5154", "font-size": "30px"}),width=8
+                                        ),
+                                dbc.Col(html.A(html.Button('Refresh Page',
+                                                           style={'margin-bottom': '10px',
+                                                                  "fontSize": "1em",
+                                                                  "background-color": "white", "color": "black",
+                                                                  "border-radius": "10px",
+                                                                  "border": "2px solid dodgerblue"}),
+                                               href=relative_pathname),align="end",
+                                        ),
 
 
-# Page 2 callbacks
-@app.callback(Output('page-2-display-value', 'children'),
-              Input('page-2-dropdown', 'value'))
-def display_value(value):
-    return f'You have selected {value}'
+                            ],
+                            align="center",
+                            className="g-0",
+                        ),
+                        style={"textDecoration": "none"},
+                    ),
+                    dbc.NavbarToggler(id="navbar-toggler", n_clicks=0),
+                    dbc.Collapse(
+                        id="navbar-collapse",
+                        is_open=False,
+                        navbar=True,
+                    ),
+                ]
+            ),
+            color="light",
+            dark=True,
+        )
+
+ ,
+        layout_page_2,
+
+
+    ])
 
 
 @app.callback(
@@ -452,7 +461,6 @@ def set_namesresults(input1):
 
 
 @app.callback(
-
     Output(component_id='selected_directory', component_property='children'),
      Output('open_directory','disabled'),
     inputs=[Input(component_id='open_directory', component_property='n_clicks'),
@@ -488,7 +496,6 @@ def set_folder(n):
 
 
 @app.callback(
-
     Output("recommendationbtn", "disabled"),
     inputs=[Input("recommendationbtn", "n_clicks")]
 )
@@ -501,10 +508,8 @@ def search(n_clicks):
 
 
 @app.callback(
-
     Output("recommendations", "children"), Output("modal", "is_open"),
     inputs=[Input("recommendation-btn", "n_clicks"), Input("close1", "n_clicks"), State("modal", "is_open")],
-
 )
 def get_skilss(n, n2, is_open):
     directory = ctrl.folder
@@ -561,21 +566,40 @@ def get_skilss(n, n2, is_open):
 
                     dbc.CardBody([
                         dash_table.DataTable(
+                            data=
                             subset_rs.to_dict('records'),
+                            columns=
                             [{"name": i, "id": i} for i in subset_rs.columns],
-                            # style header
-                            style_header={'backgroundColor': 'rgba(60, 90, 162, .25)',
-                                          'fontWeight': 'bold', "border": "1px solid gray"},
-                            style_table={'overflowX': 'scroll'},
-                            style_data={'border': '1px solid gray'},
+                            tooltip_header={i: i for i in subset_rs.columns},
+                            tooltip_data=[
+                                {
+                                    column: {'value': str(value), 'type': 'markdown'}
+                                    for column, value in row.items()
+                                } for row in subset_rs.to_dict('records')
+                            ],
+                            css=[{
+                                'selector': '.dash-table-tooltip',
+                                'rule': 'background-color: grey; font-family: monospace; color: white'
+                            }],
+
+                            # ,fill_width=False,
+                            style_header={
+                                'fontSize': 15,
+                                'textDecoration': 'underline',
+
+                            },
+
+                            # Overflow into ellipsis
 
                             style_cell={
+                                'overflow': 'hidden', 'fontSize': 15,
+                                'textOverflow': 'ellipsis', "width": "50%", 'maxWidth': 100
 
-
-                                'minWidth': '120px', 'width': '150px', 'maxWidth': '180px',
-
-                                'textOverflow': 'ellipsis',
                             },
+
+                            tooltip_delay=0,
+                            tooltip_duration=None,
+
                             style_data_conditional=[
 
                                 {
@@ -583,9 +607,11 @@ def get_skilss(n, n2, is_open):
                                         'column_id': 'Apply',
                                     },
                                     'backgroundColor': '#98FB98',
-                                    'color': 'red','fontWeight': 'bold'
-                                }]
-                        )
+                                    'color': 'red', 'fontWeight': 'bold'
+                                },
+
+                            ]
+                        ),
 
                         # dbc.Table.from_dataframe(
                         #
