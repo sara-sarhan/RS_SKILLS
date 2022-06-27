@@ -229,7 +229,7 @@ class skills_extraction():
                     "(((\d{1,4}([.\-/])([.\-/])\d{1,4}\s))|((\d{1,4}([.\-/])\d{1,2}([.\-/])\d{1,4}))| ((\s\d{1,4}([.\-/])\d{1,2}([.\-/])\d{1,4})))",
                     text)
                 if data and len(span_list) > 0 and len(span_list2) == 0:
-                    print('data', text)
+
                     return text
 
     def convert(self, fname):
@@ -656,7 +656,7 @@ class skills_extraction():
                                                                     'istituto technico']:
                 scortime1 = scortime * count
 
-                company = self.extract_company(text)
+                company = self.extract_company(text).strip().lower()
                 if company in self.dictcompany.keys():
 
                     namescoe = self.dictcompany[company]
@@ -671,7 +671,7 @@ class skills_extraction():
                 #
                 scorCompany_vect = np.array([scorCompany for i in range(len(score_skills))])
 
-                print("scorCompany_vect......",scorCompany_vect)
+
                 output_tfidf = 0.9*((((scoreDomin * scortime1)) + np.array(score_skills)) / 2) +0.1*scorCompany_vect
                 top = sorted(range(len(output_tfidf)), key=lambda i: output_tfidf[i], reverse=True)[:1]
                 list_scores = [output_tfidf[i] for i in top]

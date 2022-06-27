@@ -386,7 +386,7 @@ def select_pdf(list_of_contents, list_of_names):
                             html.Div(
                                 html.Div(
 
-                                    dbc.Button(html.Span([html.I(className="bi bi-arrow-clockwise me-2"), "Pulisci"]),
+                                    dbc.Button(html.Span([html.I(className="bi bi-arrow-clockwise me-2"), "Ricarica"]),
                                                color="danger", style={"text-align": "center", "font-weight": "bold",
                                                                        "font-size": "25px"},
                                                id="cleanbtn", disabled=False,
