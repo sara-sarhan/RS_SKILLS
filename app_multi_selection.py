@@ -568,6 +568,10 @@ def search(n_clicks):
 def get_skilss(n, n2, is_open):
     directory = ctrl.folder
     print(directory)
+    listanomi=['responsabile','direttore','direttrice','amministratrice','coordinatrice','amministratore','responsabile','account manager','account manage',
+               'account executive direct','amministratore','amministratrice','capa','capo',"coordinatrice",'coordinatore','manager',
+               'dirigente','funzionaria','funzionario','head','ispettore','ispettrice','leader','padrona','padrone','pianificatore','project lead',
+            'contabile','manager' ,'pianificatrice','strategic' ]
     if (n or n2) and directory is None:
         return html.Div(), not is_open
 
@@ -599,8 +603,8 @@ def get_skilss(n, n2, is_open):
             rs['DomainScore'] = rs['scoreDom'].astype('float').round(2).apply(lambda x: int(x*100)).astype('str').map("{}%".format)
             rs['SkillsScore'] = rs['scoreSkills'].astype('float').round(2).apply(lambda x: int(x*100)).astype('str').map("{}%".format)
             rs['Post'] = rs['jobDescription'].apply(lambda x: x[:200]).map("{}...".format)
-            rs['scorCompany'] = rs['scorCompany'].astype('float').round(2).apply(lambda x: int(x * 100)).astype(
-                'str').map("{}%".format)
+            # rs['scorCompany'] = rs['scorCompany'].astype('float').round(2).apply(lambda x: int(x * 100)).astype(
+            #     'str').map("{}%".format)
 
             rs.reset_index(inplace=True)
 
@@ -610,6 +614,8 @@ def get_skilss(n, n2, is_open):
 
             # (scoreTime*scoreDomain + scoreSkills)/2
             # N°'
+            
+            
             subset_rs = rs[['job user', 'company user', 'namescoe','Composite Score', 'TimeScore',\
                             'DomainScore', 'SkillsScore', "scorCompany",'jobTitle', 'jobCompany', 'Post', 'Apply']]
             subset_rs.rename(columns={'job user': 'Candidate job title', 'jobCompany': 'Company post', 'company user': 'Candidate company', \
@@ -733,4 +739,4 @@ if __name__ == "__main__":
     # app.run_server(port=8085)
     ctrl.folder = None
     print("Running the app...")
-    serve(app.server, host="0.0.0.0", port=8083)
+    serve(app.server, host="0.0.0.0", port=8084)

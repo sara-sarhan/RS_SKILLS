@@ -8,10 +8,10 @@ class CrossFunctions:
     stops = stopwords.words("italian")
 
     @staticmethod
-    def get_recommendation(top, df_all, scores, jobtitle, scoresd, scoress, list_score_time,company,  namescoe,scorCompany):
+    def get_recommendation(top, df_all, scores, jobtitle, scoresd, scoress, list_score_time,company,  namescoe,scorCompany,scorCompanyFalg):
         recommendation = pd.DataFrame(
             columns=['job user','company user', 'jobID', 'jobCompany', 'jobTitle', 'jobDescription', 'scoreFinal', 'scoreDom', 'scoreSkills',
-                     'scoreTime',"Apply","scorCompany",'namescoe'])
+                     'scoreTime',"Apply","scorCompany",'namescoe',"scorCompanyFalg"])
         # ['job user','jobID', 'jobTitle', 'jobLocation', 'jobDescription', 'jobSalary', 'jobIndustry', 'jobSector', 'score']
         count = 0
         df_all['jobTitle'] = df_all['jobTitle'].apply(lambda x: re.sub(r'[^\w\s]', '', x).strip().lower())
@@ -29,6 +29,7 @@ class CrossFunctions:
             recommendation.at[count, 'Apply'] = "Apply Now!"
             recommendation.at[count, 'scorCompany']=scorCompany
             recommendation.at[count, 'namescoe']=namescoe
+            recommendation.at[count, 'scorCompanyFalg']=scorCompanyFalg
 
             # recommendation.at[count, 'jobLocation'] = df_all.iloc[i]['location']
 
