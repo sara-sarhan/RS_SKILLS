@@ -51,12 +51,16 @@ class FeatureExtraction:
         output = list(cos_similarity_countv)
         return output
 
+
+
 class skills_extraction():
     def __init__(self, pdfnamepath, pathmodel, folder):
         self.pdfnamepath = pdfnamepath
         self.pathmodel = pathmodel
         self.folder = folder
-        self.dictcompany={'inreslab scarl':'small',"experis s.r.l":'medium','experis':"medium"}
+        # self.dictcompany={'inreslab scarl':'small',"experis s.r.l":'medium','experis':"medium"}
+        self.dictcompany = {'inreslab scarl': 'small', "experis s.r.l": 'medium', 'experis': "medium",
+                            "manpower s.p.a": "large"}
         self.type_company={'large':1,'medium':0.6,'small':0.3}
         from spacy.lang.it.stop_words import STOP_WORDS
         self.stop = list(spacy.lang.it.stop_words.STOP_WORDS)
@@ -116,9 +120,13 @@ class skills_extraction():
 
         if comp == 'non trovata':
             # company = re.search("\w+(?=\s(s.p.a.|s.r.l|scarl|ss|snc|sas|spa|srl|srls|sapa|sas|saa|socsoop|s.s|s.n.c|s.a.s|s.p.a|s.r.l|s.r.l.s|s.a.p.a|s.a.s|s.a.a.|soc.coop))", text)
+            # company = re.search(
+                #"(\w+((. s.r.l.|. s.a.s.|. s.r.l.|. s.p.a.|. s.r.l.|. scarl|.snc|. sas|. spa|. srl|. srls|. sapa|.sas|. saa|.socsoop|. s.n.c|. s.a.s|. s.p.a|. s.r.l|. s.r.l.s|. s.a.p.a|. s.a.s|. s.a.a.|. soc.coop)\s))|(\w+(\s(s.a.s.|. s.r.l.|s.p.a.|s.r.l.|scarl|snc|sas|spa|srl|srls|sapa|sas|saa|socsoop|s.s|s.n.c|s.a.s|s.p.a|s.r.l|s.r.l.s|s.a.p.a|s.a.s|s.a.a.|soc.coop)\s))",
+                #text)
             company = re.search(
-                "(\w+((. s.r.l.|. s.a.s.|. s.r.l.|. s.p.a.|. s.r.l.|. scarl|.snc|. sas|. spa|. srl|. srls|. sapa|.sas|. saa|.socsoop|. s.n.c|. s.a.s|. s.p.a|. s.r.l|. s.r.l.s|. s.a.p.a|. s.a.s|. s.a.a.|. soc.coop)\s))|(\w+(\s(s.a.s.|. s.r.l.|s.p.a.|s.r.l.|scarl|snc|sas|spa|srl|srls|sapa|sas|saa|socsoop|s.s|s.n.c|s.a.s|s.p.a|s.r.l|s.r.l.s|s.a.p.a|s.a.s|s.a.a.|soc.coop)\s))",
+                "(\w+((. s.r.l.|. s.a.s.|. s.r.l.|. s.p.a.|. s.r.l.|. scarl|.snc|. sas|. spa|. srl|. srls|. sapa|.sas|. saa|.socsoop|. s.n.c|. s.a.s|. s.p.a|. s.r.l|. s.r.l.s|. s.a.p.a|. s.a.s|. s.a.a.|. soc.coop| s.c.r.l. )\s))|(\w+(\s(s.a.s.|. s.r.l.|s.p.a.|s.r.l.|scarl|snc|sas|spa|srl|srls|sapa|sas|saa|socsoop|s.s|s.n.c|s.a.s|s.p.a|s.r.l|s.r.l.s|s.a.p.a|s.a.s|s.a.a.|soc.coop| s.c.r.l. )\s))",
                 text)
+
             if company:
 
                 start = company.span()[0]
@@ -415,7 +423,6 @@ class skills_extraction():
         candidate_skills_fasttext, candidate_skills_eco = self.fasttext_skills(skills, self.uniqueskills)
         allskills = candidate_skills_fasttext + skillmach
 
-        # return allskills
         return [i for i in allskills if i not in listacompetenze]
 
     def esxtractin_progra_skills(self, frase):
@@ -672,7 +679,7 @@ class skills_extraction():
                 scorCompany_vect = np.array([scorCompany for i in range(len(score_skills))])
 
                 print("scorCompany_vect......",scorCompany_vect)
-                output_tfidf = 0.9*((((scoreDomin * scortime1)) + np.array(score_skills)) / 2) +0.1*scorCompany_vect
+                output_tfidf = 0.9*((((scoreDomin * scortime1)) + np.array(score_skills)) / 2) + 0.1 * scorCompany_vect
                 top = sorted(range(len(output_tfidf)), key=lambda i: output_tfidf[i], reverse=True)[:1]
                 list_scores = [output_tfidf[i] for i in top]
                 list_scoreDomin = [scoreDomin[i] for i in top]

@@ -370,7 +370,7 @@ def select_pdf(list_of_contents, list_of_names):
                         children=[
                             html.Div(
                                 html.Div(
-                                    dbc.Button(html.Span([html.I(className="bi bi-search me-2"), "Cerca"]),
+                                    dbc.Button(html.Span([html.I(className="bi bi-search me-2"), "Analizza"]),
                                                color="primary", style={"text-align": "center", "font-weight": "bold",
                                                                        "font-size": "25px"},
                                                id="recommendationbtn", disabled=False,
@@ -386,7 +386,7 @@ def select_pdf(list_of_contents, list_of_names):
                             html.Div(
                                 html.Div(
 
-                                    dbc.Button(html.Span([html.I(className="bi bi-arrow-clockwise me-2"), "Pulisci"]),
+                                    dbc.Button(html.Span([html.I(className="bi bi-arrow-clockwise me-2"), "Nuove analisi"]),
                                                color="danger", style={"text-align": "center", "font-weight": "bold",
                                                                        "font-size": "25px"},
                                                id="cleanbtn", disabled=False,
@@ -591,8 +591,9 @@ def get_skilss(n, n2, is_open):
             path = os.path.join(*folder)
 
             rs = predict.main(pdfnamepath, path)
+            rs.sort_values(by=['scoreFinal'], ascending=False, inplace=True)
 
-            rs['N°'] = pd.Series(np.arange(1, rs.shape[0]+1), index=rs.index)
+            # rs['N°'] = pd.Series(np.arange(1, rs.shape[0]+1), index=rs.index)
             rs['Composite Score'] = rs['scoreFinal'].astype('float').round(2).apply(lambda x: int(x*100)).astype('str').map("{}%".format)
             rs['TimeScore'] = rs['scoreTime'].astype('float').round(2).apply(lambda x: int(x*100)).astype('str').map("{}%".format)
             rs['DomainScore'] = rs['scoreDom'].astype('float').round(2).apply(lambda x: int(x*100)).astype('str').map("{}%".format)
@@ -603,14 +604,18 @@ def get_skilss(n, n2, is_open):
 
             rs.reset_index(inplace=True)
 
+
+
            # print(rs['company user'].values.tolist())
 
             # (scoreTime*scoreDomain + scoreSkills)/2
-
-            subset_rs = rs[['N°','job user', 'company user', 'Composite Score', 'TimeScore',\
-                            'DomainScore', 'SkillsScore', "scorCompany",'namescoe','jobTitle', 'jobCompany', 'Post', 'Apply']]
+            # N°'
+            subset_rs = rs[['job user', 'company user', 'namescoe','Composite Score', 'TimeScore',\
+                            'DomainScore', 'SkillsScore', "scorCompany",'jobTitle', 'jobCompany', 'Post', 'Apply']]
             subset_rs.rename(columns={'job user': 'Candidate job title', 'jobCompany': 'Company post', 'company user': 'Candidate company', \
-                                      'jobTitle': 'Post job title','scorCompany':'CompanyScore','namescoe':'TypeCompany'}, inplace=True)
+                                      'jobTitle': 'Post job title','scorCompany':'CompanyScore','namescoe':'Company type'}, inplace=True)
+
+
 
             os.remove(pdfnamepath)
 
@@ -676,8 +681,8 @@ def get_skilss(n, n2, is_open):
 
                             style_cell_conditional = [
 
-                                {'if': {'column_id': 'N°'},
-                                 'width': '5%'},
+                                #{'if': {'column_id': 'N°'},
+                                 #'width': '5%'},
 
                                 {'if': {'column_id': 'Candidate company'},
                                  'width': '20%'},
@@ -686,13 +691,19 @@ def get_skilss(n, n2, is_open):
                                 {'if': {'column_id': 'Company post'},
                                  'width': '20%'},
                                 {'if': {'column_id': 'TimeScore'},
-                                 'font-weight': 'bold', "color": "#5078b4"},
+                                 'font-weight': 'bold', "color": "#5078b4", "width": "15%"},
                                 {'if': {'column_id': 'DomainScore'},
                                  'font-weight': 'bold', "color": "#5078b4"},
                                 {'if': {'column_id': 'SkillsScore'},
                                  'font-weight': 'bold', "color": "#5078b4"},
                                 {'if': {'column_id': 'CompanyScore'},
                                  'font-weight': 'bold', "color": "#5078b4"},
+                                {'if': {'column_id': 'Post'},
+                                 'width': '30%'},
+                                {'if': {'column_id': 'Candidate job title'},
+                                 'width': '30%'},
+                                {'if': {'column_id': 'Company type'},
+                                 'width': '10%'}
 
                             ]
                         ),
