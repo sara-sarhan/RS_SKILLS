@@ -12,7 +12,7 @@ import numpy as np
 from bs4 import BeautifulSoup
 import warnings
 from dateparser.search import search_dates
-
+from sklearn.preprocessing import MaxAbsScaler
 warnings.filterwarnings("ignore")
 from utils.cross_functions import CrossFunctions
 from utils.job_posts_processing import JobPostsProcessing
@@ -52,20 +52,22 @@ class FeatureExtraction:
         return output
 
 
-
 class skills_extraction():
     def __init__(self, pdfnamepath, pathmodel, folder):
-        self.lavoriScore=['responsabile','direttore','direttrice','amministratrice','coordinatrice','amministratore','responsabile','account manager','account manage',
-                   'account executive direct','amministratore','amministratrice','capa','capo',"coordinatrice",'coordinatore','manager',
-                   'dirigente','funzionaria','funzionario','head','ispettore','ispettrice','leader','padrona','padrone','pianificatore','project lead',
-               'manager' ,'pianificatrice','strategic' ]
+        self.lavoriScore = ['responsabile', 'direttore', 'direttrice', 'amministratrice', 'coordinatrice',
+                            'amministratore', 'responsabile', 'account manager', 'account manage',
+                            'account executive direct', 'amministratore', 'amministratrice', 'capa', 'capo',
+                            "coordinatrice", 'coordinatore', 'manager',
+                            'dirigente', 'funzionaria', 'funzionario', 'head', 'ispettore', 'ispettrice', 'leader',
+                            'padrona', 'padrone', 'pianificatore', 'project lead',
+                            'manager', 'pianificatrice', 'strategic']
         self.pdfnamepath = pdfnamepath
         self.pathmodel = pathmodel
         self.folder = folder
         # self.dictcompany={'inreslab scarl':'small',"experis s.r.l":'medium','experis':"medium"}
         self.dictcompany = {'inreslab scarl': 'small', "experis s.r.l": 'medium', 'experis': "medium",
                             "manpower s.p.a": "large"}
-        self.type_company={'large':1,'medium':0.6,'small':0.3}
+        self.type_company = {'large': 1, 'medium': 0.6, 'small': 0.3}
         from spacy.lang.it.stop_words import STOP_WORDS
         self.stop = list(spacy.lang.it.stop_words.STOP_WORDS)
         self.stop.extend(['e', 'i'])
@@ -82,8 +84,8 @@ class skills_extraction():
         full_occupations = pd.read_csv(os.path.join(os.getcwd(), "dataset", "occupation_full.csv"), encoding='utf-8')
 
         self.listjob = \
-        pd.read_csv(os.path.join(os.getcwd(), "dataset", "jobs_title.csv"), encoding='utf-8', delimiter=';')[
-            'jobs'].tolist()
+            pd.read_csv(os.path.join(os.getcwd(), "dataset", "jobs_title.csv"), encoding='utf-8', delimiter=';')[
+                'jobs'].tolist()
         self.listjob.sort()
 
         full_occupations_skills = full_occupations[['essential_skills', 'optional_skills', 'isco_group']]
@@ -114,10 +116,12 @@ class skills_extraction():
         self.namesprogramming.remove('FL')
         self.namesprogramming.remove('Io')
         self.namesprogramming.remove('K')
-        self.studio=['diploma', 'corso formazione', 'liceo', 'corso aggiornamneto', 'attestato conseguito',"master",'certificazioni',"attestato di partecipazion",
-                      'stage', 'borsista', 'laurea', 'certificazione', 'tirocinio', 'facoltà', 'facolta','accademia','certificato',
-                      'scuola', 'università', 'liceo', 'diploma', 'dottorato', 'master',
-                      'istituto technico']
+        self.studio = ['diploma', 'corso formazione', 'liceo', 'corso aggiornamneto', 'attestato conseguito', "master",
+                       'certificazioni', "attestato di partecipazion",
+                       'stage', 'borsista', 'laurea', 'certificazione', 'tirocinio', 'facoltà', 'facolta', 'accademia',
+                       'certificato',
+                       'scuola', 'università', 'liceo', 'diploma', 'dottorato', 'master',
+                       'istituto technico']
         with open(os.path.join(os.getcwd(), "dataset", 'namesCompany.txt'), encoding="utf8") as f:
             self.linescompany = [i.replace('\n', '').lower() for i in f.readlines() if len(i) > 4]
 
@@ -129,8 +133,8 @@ class skills_extraction():
         if comp == 'non trovata':
             # company = re.search("\w+(?=\s(s.p.a.|s.r.l|scarl|ss|snc|sas|spa|srl|srls|sapa|sas|saa|socsoop|s.s|s.n.c|s.a.s|s.p.a|s.r.l|s.r.l.s|s.a.p.a|s.a.s|s.a.a.|soc.coop))", text)
             # company = re.search(
-                #"(\w+((. s.r.l.|. s.a.s.|. s.r.l.|. s.p.a.|. s.r.l.|. scarl|.snc|. sas|. spa|. srl|. srls|. sapa|.sas|. saa|.socsoop|. s.n.c|. s.a.s|. s.p.a|. s.r.l|. s.r.l.s|. s.a.p.a|. s.a.s|. s.a.a.|. soc.coop)\s))|(\w+(\s(s.a.s.|. s.r.l.|s.p.a.|s.r.l.|scarl|snc|sas|spa|srl|srls|sapa|sas|saa|socsoop|s.s|s.n.c|s.a.s|s.p.a|s.r.l|s.r.l.s|s.a.p.a|s.a.s|s.a.a.|soc.coop)\s))",
-                #text)
+            # "(\w+((. s.r.l.|. s.a.s.|. s.r.l.|. s.p.a.|. s.r.l.|. scarl|.snc|. sas|. spa|. srl|. srls|. sapa|.sas|. saa|.socsoop|. s.n.c|. s.a.s|. s.p.a|. s.r.l|. s.r.l.s|. s.a.p.a|. s.a.s|. s.a.a.|. soc.coop)\s))|(\w+(\s(s.a.s.|. s.r.l.|s.p.a.|s.r.l.|scarl|snc|sas|spa|srl|srls|sapa|sas|saa|socsoop|s.s|s.n.c|s.a.s|s.p.a|s.r.l|s.r.l.s|s.a.p.a|s.a.s|s.a.a.|soc.coop)\s))",
+            # text)
             company = re.search(
                 "(\w+((. s.r.l.|. s.a.s.|. s.r.l.|. s.p.a.|. s.r.l.|. scarl|.snc|. sas|. spa|. srl|. srls|. sapa|.sas|. saa|.socsoop|. s.n.c|. s.a.s|. s.p.a|. s.r.l|. s.r.l.s|. s.a.p.a|. s.a.s|. s.a.a.|. soc.coop| s.c.r.l. )\s))|(\w+(\s(s.a.s.|. s.r.l.|s.p.a.|s.r.l.|scarl|snc|sas|spa|srl|srls|sapa|sas|saa|socsoop|s.s|s.n.c|s.a.s|s.p.a|s.r.l|s.r.l.s|s.a.p.a|s.a.s|s.a.a.|soc.coop| s.c.r.l. )\s))",
                 text)
@@ -155,10 +159,10 @@ class skills_extraction():
                     break
         return comp
 
-
     def extract_name(self, text):
         with open(os.path.join(os.getcwd(), "dataset", 'namesCompany.txt'), encoding="utf8") as f:
             linesnames = [i.replace('\n', ' ').title() for i in f.readlines()]
+        text = text.replace(':', '').title().strip()
         text = text.replace(':', '').title().strip()
         NAME = re.findall(
             "((Curriculum Vitae|Informazioni Personali|Nome|Cognome|Nome e Cognome) ([A-Z].?\s?)*([A-Z][a-z]+\s?)+)|(([A-Z].?\s?)*([A-Z][a-z]+\s?)+(Curriculum vitae|Informazioni Personali|Nome|Cognome))",
@@ -168,10 +172,10 @@ class skills_extraction():
             try:
                 if "@" in NAME[0][0]:
                     name = NAME[0][0][-1].split("@")[0].replace('Curriculum Vitae', ' ').replace(
-                        'Informazioni Personali', ' ').replace('Cognome', ' ').replace('Nome', ' ')
+                        'Informazioni Personali', ' ').replace('Cognome', ' ').replace('Nome', ' ').replace('E', ' ')
                 else:
                     name = NAME[0][0].replace('Curriculum Vitae', ' ').replace('Informazioni Personali', ' ').replace(
-                        'Cognome', ' ').replace('Nome', ' ')
+                        'Cognome', ' ').replace('Nome', ' ').replace('E', ' ')
                 return name
             except IndexError:
                 return -1
@@ -188,15 +192,20 @@ class skills_extraction():
     def extract_address(self, text, last):
         '''
         Helper function to extract email id from text
-
         :param text: plain text extracted from resume file
         '''
         text = text.replace(':', '').lower().replace('\n', '').replace('cap.', '').replace('n.', '').replace(',', '')
         text = re.sub(r'[0-9\n]', '', text.strip().lower()).replace(" ", " ").replace('n°', '').replace('–', '')
+
         text = " ".join(text.split())
+        text = re.sub(r'[^\w\s]', '', text.strip().lower())
         address = re.findall(
-            "((corso,residenza|luogo di nascita|domicilio|via|viale|piazza|vicolo|piazzale|viale|contrada|circonvallazione) ([a-z].?\s?)*([a-z][a-z]+\s?)+)",
+
+            "(\w*\s*)((corso|residenza|luogo di nascita|domicilio|via|viale|piazza|vicolo|piazzale|contrada|circonvallazione|p.zza|vcl)\s+([a-z].?\s+)*([a-z0-9]+\s+)+)(\w*)",
             text)
+        # address = re.findall(
+        #     "((corso,residenza|luogo di nascita|domicilio|via|viale|piazza|vicolo|piazzale|viale|contrada|circonvallazione) ([a-z].?\s?)*([a-z][a-z]+\s?)+)",
+        #     text)
 
         if address:
             try:
@@ -207,7 +216,6 @@ class skills_extraction():
     def extract_email(self, text):
         '''
         Helper function to extract email id from text
-
         :param text: plain text extracted from resume file
         '''
         text = text.replace(':', '')
@@ -221,7 +229,6 @@ class skills_extraction():
     def extract_date(self, text, last):
         '''
         Helper function to extract email id from text
-
         :param text: plain text extracted from resume file
         '''
         text = text.replace(':', '').lower().strip()
@@ -245,7 +252,6 @@ class skills_extraction():
                     "(((\d{1,4}([.\-/])([.\-/])\d{1,4}\s))|((\d{1,4}([.\-/])\d{1,2}([.\-/])\d{1,4}))| ((\s\d{1,4}([.\-/])\d{1,2}([.\-/])\d{1,4})))",
                     text)
                 if data and len(span_list) > 0 and len(span_list2) == 0:
-
                     return text
 
     def convert(self, fname):
@@ -274,19 +280,19 @@ class skills_extraction():
     def ita_estrcation_jobs(self, sentece):
         tipojob = []
         print("START extractjobb")
-    
-        # len(tipojob) ==0 and  
-      
-        if ('assegnista' not in sentece and 'maestra' not in sentece and 'maestro' not in sentece and 'professoressa' not in sentece and 'professore' not in sentece and 'docente' not in sentece and 'insegnante' not in sentece  and 'ricercatore' not in sentece and 'lavoro' not in sentece):# and 'lavoro' not in sentece :
-            
+
+        # len(tipojob) ==0 and
+
+        if (
+                'assegnista' not in sentece and 'maestra' not in sentece and 'maestro' not in sentece and 'professoressa' not in sentece and 'professore' not in sentece and 'docente' not in sentece and 'insegnante' not in sentece and 'ricercatore' not in sentece and 'lavoro' not in sentece):  # and 'lavoro' not in sentece :
+
             for study in self.studio:  # corso
                 span_list = [(match.start(), match.end()) for match in
                              re.finditer(fr"\b{study}\b", sentece)]
-               
+
                 if span_list and study not in tipojob:
                     tipojob.append(study)
-                    print(study,'....',sentece)
-                
+                  #  print(study, '....', sentece)
 
                     break
         if len(tipojob) == 0:
@@ -298,24 +304,22 @@ class skills_extraction():
                 if span_list and job not in tipojob:
                     tipojob.append(job)
                     # print(job)
-        ScorCompanyFlag=False
-        if len(tipojob)>0:
+        ScorCompanyFlag = False
+        if len(tipojob) > 0:
             for s in self.lavoriScore:
-    
-                   span_list = [(match.start(), match.end()) for match in
-                                re.finditer(fr"\b{s}\b", ' '.join(tipojob))]
-                   if span_list:
-                     
-                       ScorCompanyFlag=True
-                      
-                       
-                       break
 
-        print("END extractjobb")
-        if len(tipojob) == 0:
-            tipojob.append('non trovata')
+                span_list = [(match.start(), match.end()) for match in
+                             re.finditer(fr"\b{s}\b", ' '.join(tipojob))]
+                if span_list:
+                    ScorCompanyFlag = True
 
-        return tipojob,ScorCompanyFlag
+                    break
+
+        print("END extractjobb",ScorCompanyFlag,tipojob)
+        # if len(tipojob) == 0:
+        #     tipojob.append('non trovata')
+
+        return tipojob, ScorCompanyFlag
 
     def extract_skills_npl(self, resume_sections, listacompetenze, worddelete):
 
@@ -588,7 +592,6 @@ class skills_extraction():
         df0 = pd.DataFrame(
             {'nome e cognome': [name_], 'residenza o domicilio': [address_], 'mails': [mails_], 'data nascita': data_})
 
-
         all_skills.extend(skills)
         all_skills = list(set(all_skills))
 
@@ -601,7 +604,7 @@ class skills_extraction():
         inedx = 0
         frasiesperienza = frasiesperienza[1:]
         # salto l'utima data
-        ScorCompanyFlaglist=[]
+        ScorCompanyFlaglist = []
         while inedx + 1 < len(data):
             string = ",".join(
                 frasiesperienza[data[inedx][0]:data[inedx + 1][0]]).lower().strip()  # len(string.split())>2   and
@@ -610,8 +613,8 @@ class skills_extraction():
                                                            and 'd.lg' not in string_list and 'europass' not in string_list))):
                 test.append(string.replace('\n', ' '))
 
-                new_string = " ".join (re.sub(r'[^\w\s]', ' ', string).replace('\n', ' ').split())
-                jobs,ScorCompanyFlag = self.ita_estrcation_jobs(new_string)
+                new_string = " ".join(re.sub(r'[^\w\s]', ' ', string).replace('\n', ' ').split())
+                jobs, ScorCompanyFlag = self.ita_estrcation_jobs(new_string)
 
                 category = jobs
 
@@ -633,10 +636,11 @@ class skills_extraction():
             data[inedx][0]:data[inedx][0] + 4]).lower().strip():  # and len(data[inedx][1].split())>=2  :
             test.append(",".join(frasiesperienza[data[inedx][0]:data[inedx][0] + 4]).lower().strip().replace('\n', ' '))
 
-            new_string = " ".join ( re.sub(r'[^\w\s]', ' ',
-                                " ".join(frasiesperienza[data[inedx][0]:data[inedx][0] + 4]).lower().strip()).split())
-            
-            jobs,ScorCompanyFlag = self.ita_estrcation_jobs(new_string)
+            new_string = " ".join(re.sub(r'[^\w\s]', ' ',
+                                         " ".join(frasiesperienza[
+                                                  data[inedx][0]:data[inedx][0] + 4]).lower().strip()).split())
+
+            jobs, ScorCompanyFlag = self.ita_estrcation_jobs(new_string)
             ScorCompanyFlaglist.append(ScorCompanyFlag)
             category = jobs
 
@@ -647,8 +651,8 @@ class skills_extraction():
                     and 'd.lg' not in frasiesperienza[data[inedx][0]] \
                     and 'europass' not in frasiesperienza[data[inedx][0]]:
                 test.append(frasiesperienza[data[inedx][0]].lower().strip().replace('\n', ' '))
-                new_string = " ".join ( re.sub(r'[^\w\s]', '', frasiesperienza[data[inedx][0]].lower().strip()).split())
-                jobs,ScorCompanyFlag = self.ita_estrcation_jobs(new_string)
+                new_string = " ".join(re.sub(r'[^\w\s]', '', frasiesperienza[data[inedx][0]].lower().strip()).split())
+                jobs, ScorCompanyFlag = self.ita_estrcation_jobs(new_string)
 
                 category = jobs
                 ScorCompanyFlaglist.append(ScorCompanyFlag)
@@ -665,87 +669,121 @@ class skills_extraction():
 
         rs = pd.DataFrame(
             columns=['job user', 'company user', 'jobID', 'jobCompany', 'jobTitle', 'scoreFinal', 'scoreDom',
-                     'scoreSkills', 'scoreTime','Apply',"scorCompany",'namescoe'])
+                     'scoreSkills', 'scoreTime', 'Apply', "scorCompany", 'namescoe'])
 
+        it_job_posts['jobTitle']=it_job_posts['jobTitle'].apply(lambda text: re.sub(r'[^\w\s]', '', text.strip().lower()))
         jobslist = it_job_posts['jobTitle'].tolist()
+
         self.studio.append('non trovata')
         exp = [experience for experience in job if
-               " ".join(experience) not in  self.studio and len(experience) > 0]
+               " ".join(experience) not in self.studio and len(experience) > 0]
         scortime = 1 / len(exp)
         count = len(exp)
 
-
-
         score_skills1 = np.array(FeatureExtraction.TFIDF(description, [" ".join(all_skills).replace('\n', '')]))
         score_skills = list((score_skills1 - score_skills1.min()) / (score_skills1.max() - score_skills1.min()))
-        for experience, text, ScorCompanyFlag ,in zip(job, test,ScorCompanyFlaglist):
 
-            if len(experience) > 0 and ",".join(experience) not in  self.studio:
+
+
+        for experience, text, ScorCompanyFlag, in zip(job, test, ScorCompanyFlaglist):
+
+            if len(experience) > 0 and ",".join(experience) not in self.studio:
                 scortime1 = scortime * count
-                
-             
 
                 company = self.extract_company(text).strip().lower()
-                
-                scoreDomin1 = np.array(
-                    FeatureExtraction.TFIDF(description,
-                                            [" ".join(experience).replace('\n', ' ') + text.replace('\n', ' ')]))
-                scoreDomin = (scoreDomin1 - scoreDomin1.min()) / (scoreDomin1.max() - scoreDomin1.min())
-                #
-               
+
+
+
                 if ScorCompanyFlag is True:
+
+                    scoreDomin1 = np.array(
+                        FeatureExtraction.TFIDF(description,
+                                                [" ".join(experience).replace('\n', ' ') + text.replace('\n', ' ')]))
+
+                    scoreDomin = (scoreDomin1 - scoreDomin1.min()) / (scoreDomin1.max() - scoreDomin1.min())
+
+                    #
                     if company in self.dictcompany.keys():
 
                         namescoe = self.dictcompany[company]
                         scorCompany = self.type_company[namescoe]
                     else:
-                        namescoe= np.random.choice(list(self.type_company.keys()))
+                        namescoe = np.random.choice(list(self.type_company.keys()))
                         scorCompany = self.type_company[namescoe]
-                    
+
                     scorCompany_vect = np.array([scorCompany for i in range(len(score_skills))])
 
-                    output_tfidf = 0.9*((((scoreDomin * scortime1)) + np.array(score_skills)) / 2) + 0.1 * scorCompany_vect
-                    
+                    output_tfidf = 0.9 * (
+                                (((np.array(scoreDomin) * scortime1)) + np.array(np.array(score_skills))) / 2) + 0.1 * scorCompany_vect
+
                     top = sorted(range(len(output_tfidf)), key=lambda i: output_tfidf[i], reverse=True)[:1]
                     list_scores = [output_tfidf[i] for i in top]
                     list_scoreDomin = [scoreDomin[i] for i in top]
                     list_score_skills = [score_skills[i] for i in top]
                     list_score_time = [scortime1 for i in top]
-                    scorCompany_vect=["{}%".format(str(round(i,2)*100)) for i in scorCompany_vect]
-                   
+
+
+
+
+                    scorCompany = "{}%".format(str(round(scorCompany, 2) * 100))
                     rs = rs.append(
                         CrossFunctions.get_recommendation(top, it_job_posts, list_scores, experience, list_scoreDomin,
                                                           list_score_skills, list_score_time, company,
-                                                          namescoe,scorCompany,ScorCompanyFlag
-    
+                                                          namescoe, scorCompany, ScorCompanyFlag
+
                                                           ))
-                 
+
                 else:
-                    
-                        output_tfidf = (((scoreDomin * scortime1)) + np.array(score_skills)) / 2
-                        scorCompany='Non calcolato'
-                        namescoe='Non calcolato'
-                        top = sorted(range(len(output_tfidf)), key=lambda i: output_tfidf[i], reverse=True)[:1]
-                        list_scores = [output_tfidf[i] for i in top]
-                        list_scoreDomin = [scoreDomin[i] for i in top]
-                        list_score_skills = [score_skills[i] for i in top]
-                        list_score_time = [scortime1 for i in top]
-                        rs = rs.append(
-                            CrossFunctions.get_recommendation(top, it_job_posts, list_scores, experience, list_scoreDomin,
-                                                              list_score_skills, list_score_time, company,
-                                                              namescoe,scorCompany,ScorCompanyFlag
-        
-                                                              ))
+                    scoreDomin1 = np.array(
+                        FeatureExtraction.TFIDF(description,
+                                                [  text.replace('\n', ' ')]))
+
+                    scoreDomin = (scoreDomin1 - scoreDomin1.min()) / (scoreDomin1.max() - scoreDomin1.min())
+
+                    print(experience)
+                    scoreJpnTitle1 = np.array(
+                        FeatureExtraction.TFIDF(jobslist,
+                                                [" ".join(experience).replace('\n', ' ') ]))
+                    if (scoreJpnTitle1.max() - scoreJpnTitle1.min())==0:
+                     scoreJpnTitle=scoreJpnTitle1.max()
+                    else:
+                     scoreJpnTitle = (scoreJpnTitle1 - scoreJpnTitle1.min()) / (scoreJpnTitle1.max() - scoreJpnTitle1.min())
+
+                    print('scoreJpnTitle',scoreJpnTitle.max())
+
+                    #
+
+                    output_tfidf =(0.4*np.array(score_skills)+0.6*(np.array(scoreJpnTitle)+np.array(scoreDomin))*np.array(scortime1))
+
+
+                    print(output_tfidf)
+
+                   # output_tfidf = (scoreDomin+scortime1vect+score_skills)/3
+
+                    scorCompany = 'Non calcolato'
+                    namescoe = 'Non calcolato'
+                    top = sorted(range(len(output_tfidf)), key=lambda i: output_tfidf[i], reverse=True)[:1]
+                    list_scores = [output_tfidf[i] for i in top]
+                    list_scoreDomin = [scoreDomin[i] for i in top]
+                    list_score_skills = [score_skills[i] for i in top]
+                    list_score_time = [scortime1 for i in top]
+
+
+                    rs = rs.append(
+                        CrossFunctions.get_recommendation(top, it_job_posts, list_scores, experience, list_scoreDomin,
+                                                          list_score_skills, list_score_time, company,
+                                                          namescoe, scorCompany, ScorCompanyFlag
+
+                                                          ))
                 description.pop(jobslist.index(rs.iloc[-1].jobTitle))
                 score_skills.pop(jobslist.index(rs.iloc[-1].jobTitle))
+                jobslist.pop(jobslist.index(rs.iloc[-1].jobTitle))
 
                 count = count - 1
 
         df = pd.DataFrame({'name': test, 'jobTitle': job})
 
         df = df[df['jobTitle'].map(lambda d: len(d)) > 0]
-
-
 
         with pd.ExcelWriter(self.folder, engine='xlsxwriter') as writer1:
             # df.to_excel(name,index=False)

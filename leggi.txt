@@ -1,1 +1,9 @@
 solo versione italiana 
+
+funzione ita_estrcation_jobs
+se si deccomenta      # if len(tipojob) == 0:
+        #     tipojob.append('non trovata')
+
+si salvano pure i recod in cui nn si trova il job title, non mettendo questa opzione si possono perdere dei blocchi perhè nn si trova il job title
+ma si possono prendere dei blocchi che nn sono esperienza, va capito meglio come agire,
+ o modificare la funzione per la ricerca dei lavori o modificare la funzione per la data come creare i blocchetti
