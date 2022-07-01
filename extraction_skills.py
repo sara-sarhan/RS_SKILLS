@@ -740,7 +740,7 @@ class skills_extraction():
 
                     scoreDomin = (scoreDomin1 - scoreDomin1.min()) / (scoreDomin1.max() - scoreDomin1.min())
 
-                    print(experience)
+                   # print(experience)
                     scoreJpnTitle1 = np.array(
                         FeatureExtraction.TFIDF(jobslist,
                                                 [" ".join(experience).replace('\n', ' ') ]))
@@ -749,14 +749,15 @@ class skills_extraction():
                     else:
                      scoreJpnTitle = (scoreJpnTitle1 - scoreJpnTitle1.min()) / (scoreJpnTitle1.max() - scoreJpnTitle1.min())
 
-                    print('scoreJpnTitle',scoreJpnTitle.max())
+                   # print('scoreJpnTitle',scoreJpnTitle.max())
 
                     #
 
-                    output_tfidf =(0.4*np.array(score_skills)+0.6*(np.array(scoreJpnTitle)+np.array(scoreDomin))*np.array(scortime1))
+                   # output_tfidf =(0.4*np.array(score_skills)+0.6*(  (np.array(scoreJpnTitle)+np.array(scoreDomin)*np.array(scortime1))/2  ))
 
-
-                    print(output_tfidf)
+                    output_tfidf = 0.5 * (
+                            (((np.array(scoreDomin) * scortime1)) + np.array(
+                                np.array(score_skills))) / 2) + 0.5 * scoreJpnTitle* scortime1
 
                    # output_tfidf = (scoreDomin+scortime1vect+score_skills)/3
 
